@@ -1,5 +1,13 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import {
+  getFirestore,
+  query,
+  getDocs,
+  collection,
+  where,
+  addDoc,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -11,25 +19,37 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-console.log(app);
-const auth = getAuth();
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const provider = new GoogleAuthProvider();
-export const signInWithGoogle = () => {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      // const credential = GoogleAuthProvider.credentialFromResult(result);
-      // const token = credential.accessToken;
-      // The signed-in user info.
-      // const user = result.user;
-      console.log(result);
-    })
-    .catch((error) => {
-      // const errorCode = error.code;
-      // const errorMessage = error.message;
-      // const email = error.customData.email;
-      // const credential = GoogleAuthProvider.credentialFromError(error);
-      console.log(error);
-    });
+const googleProvider = new GoogleAuthProvider();
+const signInWithGoogle = async () => {
+  try {
+    const res = await signInWithPopup(auth, googleProvider);
+    const user = res.user;
+    let loggedUser = query(
+      collection(db, "users"),
+      where("uid", "==", user.uid)
+    );
+    let user_docs = await getDocs(loggedUser);
+    if (user_docs.docs.length === 0) {
+      let user_obj = {
+        uid: user.uid,
+        name: user.displayName,
+        email: user.email,
+        authProvider: "google",
+        accessToken: user.accessToken,
+        photoURL: user.photoURL,
+      };
+      await addDoc(collection(db, "users"), user_obj);
+    }
+    console.log(user_docs);
+  } catch (error) {
+    console.log(error);
+  }
 };
+
+const logOut = ()=>{
+  signOut(auth);
+}
+export { db, auth, app, signInWithGoogle, logOut };
