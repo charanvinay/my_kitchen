@@ -89,8 +89,8 @@ export default function AddRecipe() {
           </Step>
         ))}
       </Stepper>
-      {activeStep === 1 && <PrimaryDetails/>}
-      {activeStep === 0 && <RecipeSteps/>}
+      {activeStep === 0 && <PrimaryDetails/>}
+      {activeStep === 1 && <RecipeSteps/>}
       {activeStep === steps.length && (
         <Paper square elevation={0} sx={{ p: 3 }}>
           <Typography>All steps completed - you&apos;re finished</Typography>

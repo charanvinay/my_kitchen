@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from "react";
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import MenuIcon from "@mui/icons-material/Menu";
+import Container from "@mui/material/Container";
+import Avatar from "@mui/material/Avatar";
+import Tooltip from "@mui/material/Tooltip";
+import MenuItem from "@mui/material/MenuItem";
+import ExploreIcon from "@mui/icons-material/Explore";
 import { db, auth, logOut } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { query, collection, where, getDocs, getDoc } from "firebase/firestore";
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = [{ id: 1, tooltip: "Explore", route: "/explore" }];
+const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -28,30 +27,32 @@ function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(loading){
-        return;
+    if (loading) {
+      return;
     }
-    if(!user){
-        return navigate('/')
+    if (!user) {
+      return navigate("/");
     }
     fetchUserDetails();
-  }, [user, loading])
+  }, [user, loading]);
 
   const fetchUserDetails = async () => {
     try {
-      let logged_user = query(collection(db, "users"), where("uid", "==", user?.uid));
+      let logged_user = query(
+        collection(db, "users"),
+        where("uid", "==", user?.uid)
+      );
       let user_docs = await getDocs(logged_user);
       // console.log(user_docs.docs[0].data());
-      if(user_docs.docs.length > 0){
+      if (user_docs.docs.length > 0) {
         setLoggedUser(user_docs.docs[0].data());
-      }else{
-        setLoggedUser({})
+      } else {
+        setLoggedUser({});
       }
     } catch (error) {
       console.log(error);
     }
-  }
-  
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -65,17 +66,16 @@ function Navbar() {
   };
 
   const handleCloseUserMenu = (setting) => {
-    if(setting === "Logout"){
-        logOut();
+    if (setting === "Logout") {
+      logOut();
     }
     setAnchorElUser(null);
   };
 
   return (
-    <AppBar >
+    <AppBar>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
@@ -83,18 +83,17 @@ function Navbar() {
             href="/"
             sx={{
               mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
+              display: { xs: "none", md: "flex" },
               fontWeight: 700,
-              letterSpacing: '.1rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              letterSpacing: ".1rem",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
             My Kitchen Book
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -109,28 +108,27 @@ function Navbar() {
               id="menu-appbar"
               anchorEl={anchorElNav}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: "bottom",
+                horizontal: "left",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
+                vertical: "top",
+                horizontal: "left",
               }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' },
+                display: { xs: "block", md: "none" },
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.tooltip} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">{page.tooltip}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
@@ -138,53 +136,62 @@ function Navbar() {
             href=""
             sx={{
               mr: 2,
-              display: { xs: 'flex', md: 'none' },
+              display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.1rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              letterSpacing: ".1rem",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
             My Kitchen Book
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+              justifyContent: "end",
+            }}
+          >
             {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
+              <Tooltip title={page.tooltip} key={page.tooltip}>
+                <IconButton size="large" onClick={()=>navigate(page.route)} color="inherit">
+                  <ExploreIcon alt={page.tooltip} />
+                </IconButton>
+              </Tooltip>
             ))}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={loggedUser?.name || "User Image"} src={loggedUser?.photoURL || "/static/images/avatar/2.jpg"} />
+                <Avatar
+                  alt={loggedUser?.name || "User Image"}
+                  src={loggedUser?.photoURL || "/static/images/avatar/2.jpg"}
+                />
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={()=>handleCloseUserMenu(setting)}>
+                <MenuItem
+                  key={setting}
+                  onClick={() => handleCloseUserMenu(setting)}
+                >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
