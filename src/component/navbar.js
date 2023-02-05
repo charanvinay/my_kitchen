@@ -14,7 +14,7 @@ import ExploreIcon from "@mui/icons-material/Explore";
 import { db, auth, logOut } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { query, collection, where, getDocs, getDoc } from "firebase/firestore";
+import { query, collection, where, getDocs } from "firebase/firestore";
 
 const pages = [{ id: 1, tooltip: "Explore", route: "/explore" }];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
