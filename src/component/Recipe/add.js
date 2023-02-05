@@ -28,19 +28,10 @@ export default function AddRecipe() {
   const [activeStep, setActiveStep] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-  //choose the screen size
-  const handleResize = () => {
-    if (window.innerWidth < 800) {
-      setIsMobile(true);
-    } else {
-      setIsMobile(false);
-    }
-  };
-
   // create an event listener
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
-  });
+    setIsMobile(window.innerWidth < 800);
+  },[]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
