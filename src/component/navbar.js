@@ -12,9 +12,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { auth, logOut } from "../services/firebase";
+import { db, auth, logOut } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { query, collection, where, getDocs, getDoc } from "firebase/firestore";
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -23,6 +24,7 @@ function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [user, loading, error] = useAuthState(auth);
+  const [loggedUser, setLoggedUser] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,9 +32,25 @@ function Navbar() {
         return;
     }
     if(!user){
-        navigate('/')
+        return navigate('/')
     }
+    fetchUserDetails();
   }, [user, loading])
+
+  const fetchUserDetails = async () => {
+    try {
+      let logged_user = query(collection(db, "users"), where("uid", "==", user?.uid));
+      let user_docs = await getDocs(logged_user);
+      // console.log(user_docs.docs[0].data());
+      if(user_docs.docs.length > 0){
+        setLoggedUser(user_docs.docs[0].data());
+      }else{
+        setLoggedUser({})
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   
 
   const handleOpenNavMenu = (event) => {
@@ -68,12 +86,12 @@ function Navbar() {
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.3rem',
+              letterSpacing: '.1rem',
               color: 'inherit',
               textDecoration: 'none',
             }}
           >
-            LOGO
+            My Kitchen Book
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -124,12 +142,12 @@ function Navbar() {
               flexGrow: 1,
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.3rem',
+              letterSpacing: '.1rem',
               color: 'inherit',
               textDecoration: 'none',
             }}
           >
-            LOGO
+            My Kitchen Book
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
@@ -146,7 +164,7 @@ function Navbar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={loggedUser?.name || "User Image"} src={loggedUser?.photoURL || "/static/images/avatar/2.jpg"} />
               </IconButton>
             </Tooltip>
             <Menu
