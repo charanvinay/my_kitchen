@@ -26,7 +26,7 @@ const steps = [
 
 export default function AddRecipe() {
   const [activeStep, setActiveStep] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
 
   // create an event listener
   useEffect(() => {
@@ -56,33 +56,15 @@ export default function AddRecipe() {
             <StepLabel>{step.label}</StepLabel>
             {isMobile && (
               <StepContent>
-                <Typography>{step.description}</Typography>
-                <Box sx={{ mb: 2 }}>
-                  <div>
-                    <Button
-                      variant="contained"
-                      onClick={handleNext}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      {index === steps.length - 1 ? "Finish" : "Continue"}
-                    </Button>
-                    <Button
-                      disabled={index === 0}
-                      onClick={handleBack}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      Back
-                    </Button>
-                  </div>
-                </Box>
+                <PrimaryDetails/>
               </StepContent>
             )}
           </Step>
         ))}
       </Stepper>
-      {activeStep === 0 && <PrimaryDetails/>}
-      {activeStep === 1 && <RecipeSteps/>}
-      {activeStep === steps.length && (
+      {!isMobile && activeStep === 0 && <PrimaryDetails/>}
+      {!isMobile && activeStep === 1 && <RecipeSteps/>}
+      {!isMobile && activeStep === steps.length && (
         <Paper square elevation={0} sx={{ p: 3 }}>
           <Typography>All steps completed - you&apos;re finished</Typography>
           <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>

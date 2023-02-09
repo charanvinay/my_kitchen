@@ -10,7 +10,7 @@ function ErrorAlert(props) {
     <Snackbar
       open={props.snackopen}
       onClose={props.handleClose}
-      autoHideDuration={2000}
+      autoHideDuration={3000}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <Alert variant="filled" onClose={props.handleClose} severity="error">

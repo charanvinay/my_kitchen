@@ -4,7 +4,9 @@ import {
   Button,
   Container,
   Dialog,
+  Grid,
   IconButton,
+  Paper,
   Slide,
   Stack,
   TextField,
@@ -14,89 +16,105 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import React, { useState } from "react";
-import { db, auth } from "../../services/firebase";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { useTheme } from "@mui/system";
-import { useNavigate } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { Timestamp } from "firebase/firestore";
+import ErrorAlert from "../../Common/ErrorAlert";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const PrimaryDetails = () => {
-  const initialValues = { title: "", description: "" };
+  const initialValues = { title: "", ingredients: [] };
+  const initialIngredientValues = { title: "", imgSrc: "" };
   const [formValues, setformValues] = useState(initialValues);
-  const [formErrors, setformErrors] = useState({});
-  const [user, loading, error] = useAuthState(auth);
-  const [open, setOpen] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState(null);
+  const [ingredient, setIngredient] = useState(initialIngredientValues);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [errorText, setErrorText] = useState(false);
+  const [snackopen, setsnackOpen] = useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setsnackOpen(false);
   };
 
+  const handleClickOpen = () => setModalOpen(true);
   const handleClose = () => {
-    setOpen(false);
+    setModalOpen(false);
+    setIngredient(initialIngredientValues);
   };
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const bpSMd = theme.breakpoints.down("sm"); //max-width:599.95px
-  const bpXLd = theme.breakpoints.down("xl"); //max-width:1535.95px
 
   const handleChanges = (e) => {
     const { name, value } = e.target;
     setformValues({ ...formValues, [name]: value });
   };
 
+  const handleIngredientChanges = (e) => {
+    const { name, value } = e.target;
+    // console.log(name);
+    if (name == "title") {
+      setIngredient({ ...ingredient, [name]: value });
+    } else {
+      // console.log(e);
+      let img = URL.createObjectURL(e.target.files[0]);
+      setIngredient({ ...ingredient, [name]: img });
+    }
+    // console.log(ingredient);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    setformErrors(handleValidation(formValues));
-    console.log(handleValidation(formValues));
     if (Object.values(handleValidation(formValues)).length !== 0) {
-      alert(Object.values(handleValidation(formValues))[0]);
+      setErrorText(Object.values(handleValidation(formValues))[0]);
+      setsnackOpen(true);
     } else {
-      handleAdd(formValues);
+      let form = {
+        id: new Date().getTime().toString(36),
+        title: formValues.title,
+        ingredients: formValues.ingredients,
+        createdAt: Timestamp.now(),
+      };
+      setformValues(form);
+      // console.log(formValues);
     }
   };
 
-  const handleAdd = async (formValues) => {
-    try {
-      await addDoc(collection(db, "tasks"), {
-        title: formValues.title,
-        description: formValues.description,
-        completed: false,
-        created: Timestamp.now(),
-        uid: user?.uid,
-      });
-      navigate(`/`);
-    } catch (err) {
-      alert(err);
+  const handleSaveIngredient = () => {
+    if (!ingredient.title) {
+      setErrorText("Enter title of the Ingredient");
+      setsnackOpen(true);
+    } else if (!ingredient.imgSrc) {
+      setErrorText("Please upload the Ingredient image");
+      setsnackOpen(true);
+    } else {
+      let ing = {
+        id: new Date().getTime().toString(36),
+        title: ingredient.title,
+        imgSrc: ingredient.imgSrc,
+        createdAt: Timestamp.now(),
+      };
+      let form = formValues;
+      form.ingredients.push(ing);
+      setformValues(form);
+      // console.log(form);
+      handleClose();
     }
   };
 
   const handleValidation = (values) => {
     const errors = {};
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
     if (!values.title) {
-      errors.title = "title is required";
+      errors.title = "Please enter the title of your recipe";
     }
-    if (!values.description) {
-      errors.description = "description is required";
+    if (values.ingredients.length < 2) {
+      errors.description = "Add minimum two ingredients";
     }
     return errors;
   };
 
-  const handleImages = (e) => {
-    console.log(e);
-    console.log(e.target.files);
-    let img = URL.createObjectURL(e.target.files[0]);
-    console.log(img);
-    setUploadedImage(img);
-  };
-
   return (
-    <Box component="main" sx={{ p: 3 }}>
+    <Box component="main" sx={{ px: 1, py: 2 }}>
       <Typography
         variant="subtitle2"
         sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
@@ -125,6 +143,56 @@ const PrimaryDetails = () => {
       >
         Ingredients
       </Typography>
+      <Grid container spacing={2}>
+        {formValues.ingredients.length > 0 &&
+          formValues.ingredients.map((ingredient) => {
+            return (
+              <Grid item xs={6} md={3} key={ingredient.id}>
+                <Paper sx={{ width: "100%" }}>
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    height={120}
+                    sx={{ position: "relative" }}
+                  >
+                    <Box sx={{ width: "100%", height: "100%" }}>
+                      <img
+                        src={ingredient.imgSrc}
+                        alt={ingredient.src}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                        loading="lazy"
+                      />
+                      <Typography
+                        variant="body1"
+                        gutterBottom
+                        sx={{
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                          color: "white",
+                          position: "absolute",
+                          bottom: 0,
+                          width: "100%",
+                          textAlign: "center",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                          WebkitLineClamp: "1",
+                          WebkitBoxOrient: "vertical",
+                        }}
+                      >
+                        {ingredient.title}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Paper>
+              </Grid>
+            );
+          })}
+      </Grid>
+      <Box sx={{ height: "20px" }}></Box>
       <Box
         sx={{
           border: "2px solid rgba(0, 0, 0, 0.1)",
@@ -165,7 +233,7 @@ const PrimaryDetails = () => {
       </Box>
       <Dialog
         fullScreen
-        open={open}
+        open={modalOpen}
         onClose={handleClose}
         TransitionComponent={Transition}
       >
@@ -182,7 +250,7 @@ const PrimaryDetails = () => {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Add Ingredient
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleClose}>
+            <Button autoFocus color="inherit" onClick={handleSaveIngredient}>
               save
             </Button>
           </Toolbar>
@@ -190,10 +258,7 @@ const PrimaryDetails = () => {
         <Container maxWidth="xl" sx={{ marginY: 3 }}>
           <Stack spacing={2}>
             <Box>
-              <Typography
-                variant="subtitle2"
-                sx={{ letterSpacing: 0.6 }}
-              >
+              <Typography variant="subtitle2" sx={{ letterSpacing: 0.6 }}>
                 Name
               </Typography>
               <TextField
@@ -205,13 +270,17 @@ const PrimaryDetails = () => {
                 }}
                 fullWidth
                 variant="outlined"
-                name="name"
-                value={formValues.name}
-                onChange={handleChanges}
+                name="title"
+                value={ingredient.title}
+                onChange={handleIngredientChanges}
               />
             </Box>
-            {uploadedImage && (
-              <img src={uploadedImage} alt={uploadedImage} loading="lazy" />
+            {ingredient && (
+              <img
+                src={ingredient.imgSrc}
+                alt={ingredient.name}
+                loading="lazy"
+              />
             )}
             <Button
               component="label"
@@ -241,13 +310,19 @@ const PrimaryDetails = () => {
                   accept="image/*"
                   multiple
                   type="file"
-                  onChange={handleImages}
+                  name="imgSrc"
+                  onChange={handleIngredientChanges}
                 />
               </Stack>
             </Button>
           </Stack>
         </Container>
       </Dialog>
+      <ErrorAlert
+        snackopen={snackopen}
+        handleClose={handleCloseSnackbar}
+        text={errorText}
+      />
     </Box>
   );
 };
