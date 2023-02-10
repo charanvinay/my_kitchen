@@ -2,11 +2,11 @@ import {
   AppBar,
   Box,
   Button,
+  Card,
   Container,
   Dialog,
   Grid,
   IconButton,
-  Paper,
   Slide,
   Stack,
   TextField,
@@ -18,6 +18,7 @@ import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import React, { useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import ErrorAlert from "../../Common/ErrorAlert";
+import { getUniqueId } from "../../Common/Constants";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -70,13 +71,13 @@ const PrimaryDetails = () => {
       setsnackOpen(true);
     } else {
       let form = {
-        id: new Date().getTime().toString(36),
+        id: getUniqueId(),
         title: formValues.title,
         ingredients: formValues.ingredients,
         createdAt: Timestamp.now(),
       };
       setformValues(form);
-      // console.log(formValues);
+      console.log(formValues);
     }
   };
 
@@ -89,7 +90,7 @@ const PrimaryDetails = () => {
       setsnackOpen(true);
     } else {
       let ing = {
-        id: new Date().getTime().toString(36),
+        id: getUniqueId(),
         title: ingredient.title,
         imgSrc: ingredient.imgSrc,
         createdAt: Timestamp.now(),
@@ -97,7 +98,7 @@ const PrimaryDetails = () => {
       let form = formValues;
       form.ingredients.push(ing);
       setformValues(form);
-      // console.log(form);
+      console.log(form);
       handleClose();
     }
   };
@@ -148,7 +149,7 @@ const PrimaryDetails = () => {
           formValues.ingredients.map((ingredient) => {
             return (
               <Grid item xs={6} md={3} key={ingredient.id}>
-                <Paper sx={{ width: "100%" }}>
+                <Card sx={{ width: "100%" }}>
                   <Stack
                     direction="column"
                     spacing={1}
@@ -187,7 +188,7 @@ const PrimaryDetails = () => {
                       </Typography>
                     </Box>
                   </Stack>
-                </Paper>
+                </Card>
               </Grid>
             );
           })}
