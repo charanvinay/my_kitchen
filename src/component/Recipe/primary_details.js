@@ -24,10 +24,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const PrimaryDetails = () => {
-  const initialValues = { title: "", ingredients: [] };
+const PrimaryDetails = (props) => {
+  let { formValues, setformValues } = props;
   const initialIngredientValues = { title: "", imgSrc: "" };
-  const [formValues, setformValues] = useState(initialValues);
   const [ingredient, setIngredient] = useState(initialIngredientValues);
   const [modalOpen, setModalOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
@@ -78,6 +77,7 @@ const PrimaryDetails = () => {
       };
       setformValues(form);
       console.log(formValues);
+      props.handleNext();
     }
   };
 

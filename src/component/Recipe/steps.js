@@ -1,146 +1,134 @@
-import {
-    Box,
-    Button,
-    Container,
-    Divider,
-    TextField,
-    Typography,
-  } from "@mui/material";
-  import React, { useState } from "react";
-  import { db, auth } from "../../services/firebase";
-  import { collection, addDoc, Timestamp } from "firebase/firestore";
-  import { useTheme } from "@mui/system";
-  import { useNavigate } from "react-router-dom";
-  import { useAuthState } from "react-firebase-hooks/auth";
-  
-  const RecipeSteps = () => {
-    const initialValues = { title: "", description: "" };
-    const [formValues, setformValues] = useState(initialValues);
-    const [formErrors, setformErrors] = useState({});
-    const [user, loading, error] = useAuthState(auth);
-    const theme = useTheme();
-    const navigate = useNavigate();
-    const bpSMd = theme.breakpoints.down("sm"); //max-width:599.95px
-    const bpXLd = theme.breakpoints.down("xl"); //max-width:1535.95px
-  
-    const handleChanges = (e) => {
-      const { name, value } = e.target;
-      setformValues({ ...formValues, [name]: value });
-    };
-  
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      setformErrors(handleValidation(formValues));
-      console.log(handleValidation(formValues));
-      if (Object.values(handleValidation(formValues)).length !== 0) {
-        alert(Object.values(handleValidation(formValues))[0]);
-      } else {
-        handleAdd(formValues);
+import { Box, Button, Stack, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold';
+// import Italic from '@ckeditor/ckeditor5-basic-styles/src/italic';
+// import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
+// import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
+import { getUniqueId } from "../../Common/Constants";
+
+const RecipeSteps = (props) => {
+  const intialStepObj = {
+    id: getUniqueId(),
+    rules: [
+      {
+        test: (value) => {
+          return value !== null && value > 0;
+        },
+        message: "Please enter Duration",
+      },
+    ],
+    errors: [],
+    value: null,
+  };
+  const [steps, setSteps] = useState([intialStepObj]);
+
+  const handleChanges = (id, val) => {
+    steps.map((step) => {
+      if (step.id === id) {
+        step.value = val;
       }
-    };
-  
-    const handleAdd = async (formValues) => {
-      try {
-        await addDoc(collection(db, "tasks"), {
-          title: formValues.title,
-          description: formValues.description,
-          completed: false,
-          created: Timestamp.now(),
-          uid: user?.uid
-        });
-        navigate(`/`);
-      } catch (err) {
-        alert(err);
-      }
-    };
-  
-    const handleValidation = (values) => {
-      const errors = {};
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-      if (!values.title) {
-        errors.title = "title is required";
-      }
-      if (!values.description) {
-        errors.description = "description is required";
-      }
-      return errors;
-    };
-  
-    return (
-      <Box component="main" sx={{ p: 3 }}>
-        <Typography
-          variant="subtitle2"
-          //   color="#fff"
-          sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
-        >
-          title
-        </Typography>
-        <Box
-          sx={{
-            bgcolor: "rgba(0, 0, 0, 0.1)",
-            padding: "10px",
-            borderRadius: "2px",
-            [bpSMd]: { padding: "5px 10px" },
-          }}
-        >
-          <TextField
-            InputProps={{
-              style: {
-                letterSpacing: 0.6,
-              },
-              disableUnderline: true,
-              placeholder: "e.g: s160123@rguktsklm.ac.in ",
-            }}
-            fullWidth
-            variant="standard"
-            name="title"
-            value={formValues.title}
-            onChange={handleChanges}
-          />
-        </Box>
-        <Box sx={{ height: "10px" }}></Box>
-        <Typography
-          variant="subtitle2"
-          //   color="#fff"
-          sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
-        >
-          description
-        </Typography>
-        <Box
-          sx={{
-            bgcolor: "rgba(0, 0, 0, 0.1)",
-            padding: "10px",
-            borderRadius: "2px",
-            [bpSMd]: { padding: "5px 10px" },
-            // width: "100%",
-          }}
-        >
-          <TextField
-            fullWidth
-            type={"text"}
-            onChange={handleChanges}
-            value={formValues.description}
-            name="description"
-            InputProps={{
-              style: {
-                // color: "#fff",
-                letterSpacing: 0.6,
-              },
-              disableUnderline: true,
-              placeholder: "Enter description",
-            }}
-            variant="standard"
-          />
-        </Box>
-        <Divider sx={{ margin: "15px 0px" }} />
+    });
+    setSteps(steps);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    props.handleBack();
+  };
+
+  const handleAdd = () => {
+    let newStep = {
+      id: getUniqueId(),
+      rules: [
+        {
+          test: (value) => {
+            return value !== null && value > 0;
+          },
+          message: "Please enter Duration",
+        },
+      ],
+      errors: [],
+      value: null,
+    }
+    setSteps([...steps, newStep]);
+    console.log(steps);
+  };
+
+  const handleValidation = (values) => {
+    const errors = {};
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    if (!values.title) {
+      errors.title = "title is required";
+    }
+    if (!values.description) {
+      errors.description = "description is required";
+    }
+    return errors;
+  };
+  console.log(steps);
+  return (
+    <Box component="main" sx={{ p: 3 }}>
+      <>
+        {steps?.map((step, skey) => {
+          return (
+            <Box key={step.id}>
+              <Typography
+                variant="subtitle2"
+                sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
+              >
+                {`Step ${skey + 1}`}
+              </Typography>
+              <CKEditor
+                editor={ClassicEditor}
+                config={{
+                  placeholder: "Type your text here...",
+                  // plugins: [ Paragraph, Bold, Italic, Essentials ],
+                  toolbar: [
+                    "bold",
+                    "italic",
+                    "bulletedList",
+                    "numberedList",
+                    "insertTable",
+                  ],
+                }}
+                data={step.value}
+                onReady={(editor) => {
+                  editor.focus();
+                }}
+                key={step.id}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  handleChanges(step.id, data);
+                }}
+              />
+            </Box>
+          );
+        })}
         <Box sx={{ margin: "20px 0px 10px 0px" }}>
-          <Button variant="contained" fullWidth={true} onClick={handleSubmit}>
-            Add
+          <Button variant="outlined" fullWidth={true} onClick={handleAdd}>
+            + Add Step
           </Button>
         </Box>
-      </Box>
-    );
-  };
-  
-  export default RecipeSteps;
-  
+        <Box
+          sx={{
+            margin: "20px 0px 10px 0px",
+            display: "flex",
+            justifyContent: "end",
+            alignItems: "end",
+          }}
+        >
+          <Stack direction="row" spacing={2}>
+            <Button variant="outlined">Cancel</Button>
+            <Button variant="contained" onClick={handleSubmit}>
+              Next
+            </Button>
+          </Stack>
+        </Box>
+      </>
+    </Box>
+  );
+};
+
+export default RecipeSteps;
