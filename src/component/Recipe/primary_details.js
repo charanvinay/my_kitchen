@@ -2,7 +2,6 @@ import {
   AppBar,
   Box,
   Button,
-  Card,
   Container,
   Dialog,
   Grid,
@@ -19,6 +18,7 @@ import React, { useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import ErrorAlert from "../../Common/ErrorAlert";
 import { getUniqueId } from "../../Common/Constants";
+import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -149,46 +149,7 @@ const PrimaryDetails = (props) => {
           formValues.ingredients.map((ingredient) => {
             return (
               <Grid item xs={6} md={3} key={ingredient.id}>
-                <Card sx={{ width: "100%" }}>
-                  <Stack
-                    direction="column"
-                    spacing={1}
-                    height={120}
-                    sx={{ position: "relative" }}
-                  >
-                    <Box sx={{ width: "100%", height: "100%" }}>
-                      <img
-                        src={ingredient.imgSrc}
-                        alt={ingredient.src}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                        loading="lazy"
-                      />
-                      <Typography
-                        variant="body1"
-                        gutterBottom
-                        sx={{
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
-                          color: "white",
-                          position: "absolute",
-                          bottom: 0,
-                          width: "100%",
-                          textAlign: "center",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          display: "-webkit-box",
-                          WebkitLineClamp: "1",
-                          WebkitBoxOrient: "vertical",
-                        }}
-                      >
-                        {ingredient.title}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Card>
+                <ImgWithLabelCard imgSrc={ingredient.imgSrc} title={ingredient.title}/>
               </Grid>
             );
           })}
@@ -289,6 +250,7 @@ const PrimaryDetails = (props) => {
                 border: "2px solid rgba(0, 0, 0, 0.1)",
                 height: "50vh",
                 borderRadius: "1",
+                textTransform: "none",
                 borderStyle: "dashed",
                 "&:hover": {
                   backgroundColor: "transparent",

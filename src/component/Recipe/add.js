@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import PrimaryDetails from "./primary_details";
 import RecipeSteps from "./steps";
+import { Stack } from "@mui/material";
 
 const steps = [
   {
@@ -27,13 +28,13 @@ const steps = [
 export default function AddRecipe() {
   const [activeStep, setActiveStep] = useState(0);
   const [isMobile, setIsMobile] = useState(true);
-  const initialValues = { title: "", ingredients: [] };
+  const initialValues = { title: "", ingredients: [], steps: [] };
   const [formValues, setformValues] = useState(initialValues);
 
   // create an event listener
   useEffect(() => {
     setIsMobile(window.innerWidth < 800);
-  },[]);
+  }, []);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -47,8 +48,44 @@ export default function AddRecipe() {
     setActiveStep(0);
   };
 
-  const cmp_PrimaryDetails = ()=> <PrimaryDetails handleNext={handleNext} handleBack={handleBack} formValues={formValues} setformValues={setformValues}/>
-  const cmp_RecipeSteps = ()=> <RecipeSteps handleNext={handleNext} handleBack={handleBack} formValues={formValues} setformValues={setformValues}/>
+  const cmp_PrimaryDetails = () => (
+    <PrimaryDetails
+      handleNext={handleNext}
+      handleBack={handleBack}
+      formValues={formValues}
+      setformValues={setformValues}
+    />
+  );
+  const cmp_RecipeSteps = () => (
+    <RecipeSteps
+      handleNext={handleNext}
+      handleBack={handleBack}
+      formValues={formValues}
+      setformValues={setformValues}
+    />
+  );
+  const cmp_Finish = () => (
+    <Paper square elevation={0} sx={{ p: 3 }}>
+      <Typography>All steps completed - you&apos;re finished</Typography>
+      <Box
+        sx={{
+          margin: "20px 0px 10px 0px",
+          display: "flex",
+          justifyContent: "end",
+          alignItems: "end",
+        }}
+      >
+        <Stack direction="row" spacing={2}>
+          <Button variant="outlined" onClick={handleBack}>
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={handleBack}>
+            Finish
+          </Button>
+        </Stack>
+      </Box>
+    </Paper>
+  );
 
   return (
     <Box component="main" sx={{ paddingX: 3, paddingY: 6 }}>
@@ -63,6 +100,7 @@ export default function AddRecipe() {
               <StepContent>
                 {activeStep === 0 && cmp_PrimaryDetails()}
                 {activeStep === 1 && cmp_RecipeSteps()}
+                {activeStep === 2 && cmp_Finish()}
               </StepContent>
             )}
           </Step>
@@ -70,14 +108,7 @@ export default function AddRecipe() {
       </Stepper>
       {!isMobile && activeStep === 0 && cmp_PrimaryDetails()}
       {!isMobile && activeStep === 1 && cmp_RecipeSteps()}
-      {!isMobile && activeStep === steps.length && (
-        <Paper square elevation={0} sx={{ p: 3 }}>
-          <Typography>All steps completed - you&apos;re finished</Typography>
-          <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-            Reset
-          </Button>
-        </Paper>
-      )}
+      {!isMobile && activeStep === 2 && cmp_Finish()}
     </Box>
   );
 }
