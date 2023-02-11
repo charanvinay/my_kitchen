@@ -4,6 +4,7 @@ import { getUniqueId } from "../../Common/Constants";
 import ErrorAlert from "../../Common/ErrorAlert";
 import { PhotoCamera } from "@mui/icons-material";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
+import CKeditor from "../../Common/Skeletons/CKeditor";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
@@ -129,20 +130,15 @@ const RecipeSteps = (props) => {
               >
                 {`Step ${skey + 1}`}
               </Typography>
-              <Suspense
-                fallback={
-                  <div className="d-flex py-2 justify-content-center align-items-center">
-                    Loading
-                  </div>
-                }
-              >
-                <CKeditorRender
-                  value={step.value}
-                  id={step.id}
-                  handleChanges={handleChanges}
-                />
+              <Suspense fallback={<CKeditor />}>
+                <div className="ckeditor">
+                  <CKeditorRender
+                    value={step.value}
+                    id={step.id}
+                    handleChanges={handleChanges}
+                  />
+                </div>
               </Suspense>
-
               {step.errors.map((error, ekey) => {
                 return (
                   <Typography key={ekey} variant="caption" color="error">
@@ -193,7 +189,6 @@ const RecipeSteps = (props) => {
                       <input
                         hidden
                         accept="image/*"
-                        multiple
                         type="file"
                         name="imgSrc"
                         onChange={(e) =>
@@ -208,7 +203,7 @@ const RecipeSteps = (props) => {
           );
         })}
         <Box sx={{ margin: "20px 0px 10px 0px" }}>
-          <Button variant="outlined" fullWidth={true} onClick={handleAdd}>
+          <Button fullWidth={true} onClick={handleAdd}>
             + Add Step
           </Button>
         </Box>
@@ -222,7 +217,7 @@ const RecipeSteps = (props) => {
         >
           <Stack direction="row" spacing={2}>
             <Button variant="outlined" onClick={goToPreviousPage}>
-              Cancel
+              Previous
             </Button>
             <Button variant="contained" onClick={handleSubmit}>
               Next

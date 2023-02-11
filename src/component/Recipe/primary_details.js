@@ -73,6 +73,8 @@ const PrimaryDetails = (props) => {
         id: getUniqueId(),
         title: formValues.title,
         ingredients: formValues.ingredients,
+        steps: formValues.steps,
+        finish: formValues.finish,
         createdAt: Timestamp.now(),
       };
       setformValues(form);
@@ -271,7 +273,6 @@ const PrimaryDetails = (props) => {
                 <input
                   hidden
                   accept="image/*"
-                  multiple
                   type="file"
                   name="imgSrc"
                   onChange={handleIngredientChanges}
