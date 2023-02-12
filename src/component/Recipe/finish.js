@@ -5,6 +5,7 @@ import ErrorAlert from "../../Common/ErrorAlert";
 import { PhotoCamera } from "@mui/icons-material";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
+import Step from "../../Common/Skeletons/Step";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
@@ -35,6 +36,7 @@ const Finish = (props) => {
   const [finish, setFinish] = useState(intialStepObj);
   const [snackopen, setsnackOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
+  const [displayEditors, setDisplayEditors] = useState(false);
 
   useEffect(() => {
     setFinish(
@@ -42,6 +44,13 @@ const Finish = (props) => {
         ? { ...formValues["finish"] }
         : intialStepObj
     );
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDisplayEditors(true);
+    }, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleCloseSnackbar = (event, reason) => {
@@ -73,12 +82,12 @@ const Finish = (props) => {
 
   const goToPreviousPage = () => {
     setformValues({ ...formValues, finish: finish });
-    // props.handleBack();
+    props.handleBack();
   };
 
   const goToNextPage = () => {
     setformValues({ ...formValues, finish: finish });
-    props.handleNext();
+    // props.handleNext();
   };
 
   const handleValidation = () => {
@@ -109,95 +118,97 @@ const Finish = (props) => {
   };
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
-      <>
-        <Box>
-          <Typography
-            variant="subtitle2"
-            sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
-          >
-            Final Step
-          </Typography>
-          <Suspense fallback={<CKeditor />}>
-            <div className="ckeditor">
-              <CKeditorRender
-                value={finish.value}
-                id={finish.id}
-                handleChanges={handleChanges}
-              />
-            </div>
-          </Suspense>
-          <Box sx={{ marginY: "15px" }}>
-            <Divider />
-          </Box>
-          <Grid container spacing={2}>
-            {finish.imgSrc && (
-              <Grid item xs={12} md>
-                <ImgWithLabelCard
-                  imgSrc={finish.imgSrc}
-                  title={`Final Image`}
+      {displayEditors ? (
+        <>
+          <Box>
+            <Typography
+              variant="subtitle2"
+              sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
+            >
+              Final Step
+            </Typography>
+            <Suspense fallback={<CKeditor />}>
+              <div className="ckeditor">
+                <CKeditorRender
+                  value={finish.value}
+                  id={finish.id}
+                  handleChanges={handleChanges}
                 />
-              </Grid>
-            )}
-            <Grid item xs={12} md>
-              <Button
-                component="label"
-                sx={{
-                  border: "2px solid rgba(0, 0, 0, 0.1)",
-                  height: 120,
-                  width: "100%",
-                  borderRadius: "1",
-                  textTransform: "none",
-                  borderStyle: "dashed",
-                  "&:hover": {
-                    backgroundColor: "transparent",
-                    borderStyle: "dashed",
-                    outline: "none",
-                  },
-                }}
-              >
-                <Stack direction="row" spacing={1}>
-                  <PhotoCamera sx={{ color: "rgba(0, 0, 0, 0.2)" }} />
-                  <Typography
-                    variant="body1"
-                    gutterBottom
-                    sx={{ color: "rgba(0, 0, 0, 0.3)" }}
-                  >
-                    {finish.imgSrc
-                      ? `Change Final Image`
-                      : "Upload Image"}
-                  </Typography>
-                  <input
-                    hidden
-                    accept="image/*"
-                    type="file"
-                    name="imgSrc"
-                    onChange={(e) =>
-                      handleChanges(finish.id, e.target.files[0], "image")
-                    }
+              </div>
+            </Suspense>
+            <Box sx={{ marginY: "15px" }}>
+              <Divider />
+            </Box>
+            <Grid container spacing={2}>
+              {finish.imgSrc && (
+                <Grid item xs={12} md>
+                  <ImgWithLabelCard
+                    imgSrc={finish.imgSrc}
+                    title={`Final Image`}
                   />
-                </Stack>
-              </Button>
+                </Grid>
+              )}
+              <Grid item xs={12} md>
+                <Button
+                  component="label"
+                  sx={{
+                    border: "2px solid rgba(0, 0, 0, 0.1)",
+                    height: 120,
+                    width: "100%",
+                    borderRadius: "1",
+                    textTransform: "none",
+                    borderStyle: "dashed",
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                      borderStyle: "dashed",
+                      outline: "none",
+                    },
+                  }}
+                >
+                  <Stack direction="row" spacing={1}>
+                    <PhotoCamera sx={{ color: "rgba(0, 0, 0, 0.2)" }} />
+                    <Typography
+                      variant="body1"
+                      gutterBottom
+                      sx={{ color: "rgba(0, 0, 0, 0.3)" }}
+                    >
+                      {finish.imgSrc ? `Change Final Image` : "Upload Image"}
+                    </Typography>
+                    <input
+                      hidden
+                      accept="image/*"
+                      type="file"
+                      name="imgSrc"
+                      onChange={(e) =>
+                        handleChanges(finish.id, e.target.files[0], "image")
+                      }
+                    />
+                  </Stack>
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
-        <Box
-          sx={{
-            margin: "20px 0px 10px 0px",
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "end",
-          }}
-        >
-          <Stack direction="row" spacing={2}>
-            <Button variant="outlined" onClick={goToPreviousPage}>
-              Previous
-            </Button>
-            <Button variant="contained" onClick={handleSubmit}>
-              Next
-            </Button>
-          </Stack>
-        </Box>
-      </>
+          </Box>
+          <Box
+            sx={{
+              margin: "20px 0px 10px 0px",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "end",
+            }}
+          >
+            <Stack direction="row" spacing={2}>
+              <Button variant="outlined" onClick={goToPreviousPage}>
+                Previous
+              </Button>
+              <Button variant="contained" onClick={handleSubmit}>
+                Next
+              </Button>
+            </Stack>
+          </Box>
+        </>
+      ) : (
+        <Step />
+      )}
       <ErrorAlert
         snackopen={snackopen}
         handleClose={handleCloseSnackbar}
