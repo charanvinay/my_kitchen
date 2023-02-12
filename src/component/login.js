@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { auth, signInWithGoogle } from "../services/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { BookLoaderComponent } from "../Common/BookLoader";
 
 function Login() {
   const [user, loading, error] = useAuthState(auth);
@@ -34,7 +35,7 @@ function Login() {
   return (
     <>
       {pageLoading ? (
-        <>Loading</>
+        <BookLoaderComponent height={"100vh"}/>
       ) : (
         <Box
           height="100vh"

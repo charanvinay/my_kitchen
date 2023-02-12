@@ -11,6 +11,7 @@ function HeadingLG(props) {
       sx={{
         fontSize: "40px",
         textTransform: "uppercase",
+        fontWeight: "bold",
         letterSpacing: 2,
         color: "text.primary",
         margin: "20px 0px 5px 0px",

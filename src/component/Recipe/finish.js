@@ -1,13 +1,31 @@
-import { Box, Button, Divider, Grid, Stack, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  Dialog,
+  Divider,
+  Grid,
+  IconButton,
+  Slide,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { getUniqueId } from "../../Common/Constants";
+import CloseIcon from "@mui/icons-material/Close";
 import ErrorAlert from "../../Common/ErrorAlert";
 import { PhotoCamera } from "@mui/icons-material";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
+import CompleteRecipe from "./complete_recipe";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const Finish = (props) => {
   let { formValues, setformValues } = props;
@@ -37,6 +55,10 @@ const Finish = (props) => {
   const [snackopen, setsnackOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
   const [displayEditors, setDisplayEditors] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleClickOpen = () => setModalOpen(true);
+  const handleClose = () => setModalOpen(false);
 
   useEffect(() => {
     setFinish(
@@ -87,7 +109,7 @@ const Finish = (props) => {
 
   const goToNextPage = () => {
     setformValues({ ...formValues, finish: finish });
-    // props.handleNext();
+    setModalOpen(true);
   };
 
   const handleValidation = () => {
@@ -115,6 +137,10 @@ const Finish = (props) => {
     });
     setFinish({ ...finish });
     return errors;
+  };
+
+  const handleFinish = () => {
+    props.handleNext();
   };
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
@@ -201,7 +227,7 @@ const Finish = (props) => {
                 Previous
               </Button>
               <Button variant="contained" onClick={handleSubmit}>
-                Next
+                Preview
               </Button>
             </Stack>
           </Box>
@@ -209,6 +235,32 @@ const Finish = (props) => {
       ) : (
         <Step />
       )}
+      <Dialog
+        fullScreen
+        open={modalOpen}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <AppBar sx={{ position: "relative" }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleClose}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1, textAlign:"center" }} variant="h6" component="div">
+              Preview
+            </Typography>
+            <Button variant="contained" color="success" onClick={handleFinish}>
+              Finish
+            </Button>
+          </Toolbar>
+        </AppBar>
+        <CompleteRecipe recipe={formValues} />
+      </Dialog>
       <ErrorAlert
         snackopen={snackopen}
         handleClose={handleCloseSnackbar}

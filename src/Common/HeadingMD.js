@@ -12,6 +12,7 @@ function HeadingMD(props) {
         fontSize: "25px",
         textTransform: "capitalize",
         color: props.color || "text.primary",
+        letterSpacing: 1,
         [bpSMd]: { fontSize: "16px" },
       }}
     >

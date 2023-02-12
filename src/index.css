@@ -27,6 +27,9 @@
 .ck.ck-content ul {
   padding-left: 30px;
 }
+.custom-subtitle1 ul, .custom-subtitle1 ol {
+  padding-left: 30px;
+}
 
 .ck.ck-content ol,
 .ck.ck-content ol li {

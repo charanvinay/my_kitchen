@@ -1,4 +1,5 @@
 export const primary = "#176ede";
+export const primaryLight = "#75aaf0";
 export const bgSecondary = "#F8F9FA";
 export const bgTerinary = "#FAFAFA";
 export const borderLight = "#EEF0F3";
