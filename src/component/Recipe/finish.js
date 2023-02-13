@@ -223,6 +223,7 @@ const Finish = (props) => {
                       hidden
                       accept="image/*"
                       type="file"
+                      capture="user"
                       name="imgSrc"
                       onChange={(e) =>
                         handleChanges(finish.id, e.target.files[0], "image")

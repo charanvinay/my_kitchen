@@ -90,7 +90,7 @@ function Navbar() {
               textDecoration: "none",
             }}
           >
-            My Kitchen Book
+            Cook Mate
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -144,7 +144,7 @@ function Navbar() {
               textDecoration: "none",
             }}
           >
-            My Kitchen Book
+            Cook Mate
           </Typography>
           <Box
             sx={{

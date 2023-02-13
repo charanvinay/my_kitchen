@@ -177,6 +177,7 @@ const RecipeSteps = (props) => {
                           hidden
                           accept="image/*"
                           type="file"
+                          capture="user"
                           name="imgSrc"
                           onChange={(e) =>
                             handleChanges(step.id, e.target.files[0], "image")
