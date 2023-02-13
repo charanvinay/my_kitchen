@@ -13,16 +13,8 @@ const RecipeSteps = (props) => {
   let { formValues, setformValues } = props;
   const intialStepObj = {
     id: getUniqueId(),
-    rules: [
-      {
-        test: (value) => {
-          return value !== null && value.length > 0;
-        },
-        message: "* Please fill this step",
-      },
-    ],
     errors: [],
-    imgSrc: null,
+    imgSrc: "",
     value: null,
   };
   const [steps, setSteps] = useState([]);
@@ -91,16 +83,8 @@ const RecipeSteps = (props) => {
   const handleAdd = () => {
     let newStep = {
       id: getUniqueId(),
-      rules: [
-        {
-          test: (value) => {
-            return value !== null && value.length > 0;
-          },
-          message: "* Please fill this step",
-        },
-      ],
       errors: [],
-      imgSrc: null,
+      imgSrc: "",
       value: null,
     };
     setSteps([...steps, newStep]);
@@ -111,17 +95,10 @@ const RecipeSteps = (props) => {
     let errors = [];
     steps.map((step) => {
       step["errors"] = [];
-      step.rules.map((rule) => {
-        if (
-          rule.test !== undefined &&
-          typeof rule.test === "function" &&
-          !rule.test(step["value"])
-        ) {
-          step["errors"].push({ message: rule.message });
-          errors.push(false);
-        }
-        return rule;
-      });
+      if(!Boolean(step.value)){
+        step["errors"].push({ message: "* Please fill this step" });
+        errors.push(false);
+      }
     });
     setSteps([...steps]);
     // console.log(steps);

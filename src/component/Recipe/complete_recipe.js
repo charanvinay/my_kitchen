@@ -92,7 +92,7 @@ const CompleteRecipe = (props) => {
 //     },
 //   };
   return (
-    <Container maxWidth="xl" sx={{ marginY: 3 }}>
+    <Container maxWidth="xl" sx={{ marginTop: 2, marginBottom: 5 }}>
       <Box sx={{ textAlign: "center" }}>
         <HeadingLG text={recipe.title} />
       </Box>

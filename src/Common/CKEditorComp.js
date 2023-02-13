@@ -13,7 +13,7 @@ const CKEditorComp = (props) => {
       }}
       data={props.value}
       onReady={(editor) => {
-        // editor.focus();
+        editor.focus();
       }}
       key={props.id}
       onChange={(event, editor) => {

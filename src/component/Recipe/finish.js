@@ -20,6 +20,11 @@ import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
 import CompleteRecipe from "./complete_recipe";
+import { useNavigate } from "react-router-dom";
+import { db, auth } from "../../services/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { query, collection,addDoc,  where, getDocs } from "firebase/firestore";
+
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
@@ -31,24 +36,8 @@ const Finish = (props) => {
   let { formValues, setformValues } = props;
   const intialStepObj = {
     id: getUniqueId(),
-    rules: [
-      {
-        type: "text",
-        test: (value) => {
-          return value !== null && value.length > 0;
-        },
-        message: "Please fill the final step field",
-      },
-      {
-        type: "image",
-        test: (value) => {
-          return value !== null && value.length > 0;
-        },
-        message: "Please Upload the final image",
-      },
-    ],
     errors: [],
-    imgSrc: null,
+    imgSrc: "",
     value: null,
   };
   const [finish, setFinish] = useState(intialStepObj);
@@ -56,6 +45,37 @@ const Finish = (props) => {
   const [errorText, setErrorText] = useState(false);
   const [displayEditors, setDisplayEditors] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loggedUser, setLoggedUser] = useState({});
+  const navigate = useNavigate();
+
+  const [user, loading, error] = useAuthState(auth);
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+    if (!user) {
+      return navigate("/");
+    }
+    fetchUserDetails();
+  }, [user, loading]);
+
+  const fetchUserDetails = async () => {
+    try {
+      let logged_user = query(
+        collection(db, "users"),
+        where("uid", "==", user?.uid)
+      );
+      let user_docs = await getDocs(logged_user);
+      // console.log(user_docs.docs[0].data());
+      if (user_docs.docs.length > 0) {
+        setLoggedUser(user_docs.docs[0].data());
+      } else {
+        setLoggedUser({});
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleClickOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
@@ -109,38 +129,37 @@ const Finish = (props) => {
 
   const goToNextPage = () => {
     setformValues({ ...formValues, finish: finish });
-    setModalOpen(true);
+    handleClickOpen()
   };
 
   const handleValidation = () => {
     let errors = [];
     finish["errors"] = [];
-    finish.rules.map((rule) => {
-      if (
-        rule.test !== undefined &&
-        typeof rule.test === "function" &&
-        rule.type === "text" &&
-        !rule.test(finish["value"])
-      ) {
-        finish["errors"].push({ message: rule.message });
-        errors.push(false);
-      } else if (
-        rule.test !== undefined &&
-        typeof rule.test === "function" &&
-        rule.type === "image" &&
-        !rule.test(finish["imgSrc"])
-      ) {
-        finish["errors"].push({ message: rule.message });
-        errors.push(false);
-      }
-      return rule;
-    });
+    if(!Boolean(finish.value)){
+      finish["errors"].push({ message: "Please fill the final step" });
+      errors.push(false);
+    }
+    if(!Boolean(finish.imgSrc)){
+      finish["errors"].push({ message: "Please Upload the final image" });
+      errors.push(false);
+    }
     setFinish({ ...finish });
     return errors;
   };
 
-  const handleFinish = () => {
-    props.handleNext();
+  const handleFinish = async () => {
+    try {
+      let recipe_obj = {
+        uid: loggedUser.uid,
+        ...formValues,
+      }
+      console.log(recipe_obj);
+      await addDoc(collection(db, "recipes"), recipe_obj);
+      navigate("/home")
+    } catch (error) {
+      console.log(error);
+    }
+    handleClose()
   };
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
@@ -241,7 +260,7 @@ const Finish = (props) => {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: "relative" }}>
+        <AppBar>
           <Toolbar>
             <IconButton
               edge="start"
@@ -254,11 +273,12 @@ const Finish = (props) => {
             <Typography sx={{ ml: 2, flex: 1, textAlign:"center" }} variant="h6" component="div">
               Preview
             </Typography>
-            <Button variant="contained" color="success" onClick={handleFinish}>
+            <Button variant="outlined" color="inherit" onClick={handleFinish}>
               Finish
             </Button>
           </Toolbar>
         </AppBar>
+        <Toolbar />
         <CompleteRecipe recipe={formValues} />
       </Dialog>
       <ErrorAlert
