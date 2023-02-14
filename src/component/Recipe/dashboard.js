@@ -68,7 +68,7 @@ const Dashboard = () => {
           </Grid>
         )}
         {loadding || (
-          <Grid container spacing={2}>
+          <Grid container spacing={3}>
             {recipesList?.map((recipe) => {
               return (
                 <Grid item xs={12} md={4} key={recipe.id}>

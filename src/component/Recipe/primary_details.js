@@ -19,6 +19,7 @@ import { Timestamp } from "firebase/firestore";
 import ErrorAlert from "../../Common/ErrorAlert";
 import { getUniqueId } from "../../Common/Constants";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
+import { useNavigate } from "react-router-dom";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -31,6 +32,7 @@ const PrimaryDetails = (props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
   const [snackopen, setsnackOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
@@ -188,8 +190,7 @@ const PrimaryDetails = (props) => {
         }}
       >
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined">Cancel</Button>
-
+          <Button variant="outlined" onClick={()=>navigate('/home')}>Cancel</Button>
           <Button variant="contained" onClick={handleSubmit}>
             Next
           </Button>

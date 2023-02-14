@@ -8,53 +8,102 @@ import {
   CardContent,
   CardHeader,
   CardMedia,
+  Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import { red } from "@mui/material/colors";
+import GradientBLACK from "../../Assets/20210113_083213.png";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const RecipeCard = (props) => {
   let { title, finish } = props.recipe;
+  const [liked, setLiked] = useState(false);
 
   return (
-    <Card>
-      <CardActionArea>
-        <CardHeader
-          avatar={
-            <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-              R
-            </Avatar>
+    <Card
+      sx={{
+        position: "relative",
+        boxShadow:
+          "1px 2px 2px hsl(0deg 0% 50% / 0.2), 2px 4px 4px hsl(0deg 0% 50% / 0.2), 4px 8px 8px hsl(0deg 0% 50% / 0.2), 8px 16px 16px hsl(0deg 0% 50% / 0.2), 16px 32px 32px hsl(0deg 0% 50% / 0.2)",
+      }}
+    >
+      <Box sx={{ height: 300 }}>
+        <img
+          src={
+            "https://www.foodandwine.com/thmb/dMG6keGBcEF7XF8LZdR2y5dPrxc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/jamaican-jerk-chicken-FT-RECIPE0918-eabbd55da31f4fa9b74367ef47464351.jpg"
           }
-          title="Shrimp and Chorizo Paella"
-          subheader="September 14, 2016"
+          alt={"Recipe Image"}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+          loading="lazy"
         />
-        <Box sx={{ height: 150 }}>
-          <img
-            src={finish.imgSrc}
-            alt={"Recipe Image"}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-            loading="lazy"
-          />
-        </Box>
-        <CardContent>
-          <Typography variant="h6">{title}</Typography>
-        </CardContent>
-        {/* <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
+      </Box>
+      <CardContent
+        sx={{
+          width: "90%",
+          // padding: "20px",
+          zIndex: 1,
+          position: "absolute",
+          bottom: 0,
+        }}
+      >
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-end"
+          spacing={1}
+        >
+          <Stack>
+            <Typography variant="h6" color="white">
+              {title}
+            </Typography>
+            <Typography variant="subtitle2" color="white">
+              {" by Shrimp and Chorizo Paella"}
+            </Typography>
+          </Stack>
+          <IconButton size="large">
+            {liked ? (
+              <FavoriteIcon
+                sx={{ fontSize: "1.5rem", color: "white" }}
+                onClick={() => setLiked(!liked)}
+              />
+            ) : (
+              <FavoriteBorderIcon
+                sx={{ fontSize: "1.5rem", color: "white" }}
+                onClick={() => setLiked(!liked)}
+              />
+            )}
           </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-        </CardActions> */}
-      </CardActionArea>
+        </Stack>
+      </CardContent>
+      <div
+        style={{
+          backgroundImage:
+            "linear-gradient(rgb(0 0 0 / 40%) 0%, transparent 20%)",
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          zIndex: 0,
+          width: "100%",
+        }}
+      />
+      <img
+        style={{
+          height: "60%",
+          position: "absolute",
+          bottom: 0,
+          zIndex: 0,
+          width: "100%",
+        }}
+        src={GradientBLACK}
+      />
     </Card>
   );
 };
