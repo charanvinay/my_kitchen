@@ -24,7 +24,7 @@ const steps = [
 ];
 
 export default function AddRecipe() {
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
   const [isMobile, setIsMobile] = useState(true);
   const initialValues = { title: "", ingredients: [], steps: [], finish: {} };
   const [formValues, setformValues] = useState(initialValues);
