@@ -34,6 +34,7 @@ const PrimaryDetails = (props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
   const [snackopen, setsnackOpen] = useState(false);
+  const [ingredientEdit, setIngredientEdit] = useState(false);
   const navigate = useNavigate();
 
   const handleCloseSnackbar = (event, reason) => {
@@ -107,6 +108,30 @@ const PrimaryDetails = (props) => {
     }
   };
 
+  const handleEditIngredient = () => {
+    if (!ingredient.title) {
+      setErrorText("Enter title of the Ingredient");
+      setsnackOpen(true);
+    } else if (!ingredient.imgSrc) {
+      setErrorText("Please upload the Ingredient image");
+      setsnackOpen(true);
+    } else {
+      let form = formValues;
+      form.ingredients.map((ing) => {
+        if (ing.id == ingredient.id) {
+          ing.id = ingredient.id;
+          ing.title = ingredient.title;
+          ing.imgSrc = ingredient.imgSrc;
+          ing.createdAt = Timestamp.now();
+        }
+      });
+      setformValues(form);
+      console.log(form);
+      handleClose();
+      setIngredientEdit(false)
+    }
+  };
+
   const handleValidation = (values) => {
     const errors = {};
     if (!values.title) {
@@ -124,7 +149,7 @@ const PrimaryDetails = (props) => {
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
       <Grid container spacing={1}>
-        <Grid item xs={12} md={6} key={ingredient.id}>
+        <Grid item xs={12} md={6}>
           <Typography
             variant="subtitle2"
             sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
@@ -159,7 +184,7 @@ const PrimaryDetails = (props) => {
             sx={{ width: "100%" }}
             renderValue={(selected) => {
               if (!Boolean(selected)) {
-                return <p style={{color: "rgb(191 191 191)"}}>Eg: Non-Veg</p>;
+                return <p style={{ color: "rgb(191 191 191)" }}>Eg: Non-Veg</p>;
               }
               return selected;
             }}
@@ -182,11 +207,21 @@ const PrimaryDetails = (props) => {
       >
         Ingredients
       </Typography>
-      <Grid container spacing={2}>
+      <Grid container spacing={1}>
         {formValues.ingredients.length > 0 &&
           formValues.ingredients.map((ingredient) => {
             return (
-              <Grid item xs={6} md={3} key={ingredient.id}>
+              <Grid
+                item
+                xs={6}
+                md={3}
+                key={ingredient.id}
+                onClick={() => {
+                  setIngredient(ingredient);
+                  setModalOpen(true);
+                  setIngredientEdit(true);
+                }}
+              >
                 <ImgWithLabelCard
                   imgSrc={ingredient.imgSrc}
                   title={ingredient.title}
@@ -194,30 +229,30 @@ const PrimaryDetails = (props) => {
               </Grid>
             );
           })}
+        <Grid item xs>
+          <Box
+            sx={{
+              border: "2px solid rgba(0, 0, 0, 0.1)",
+              height: 120,
+              borderRadius: "1",
+              borderStyle: "dashed",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={handleClickOpen}
+          >
+            <Typography
+              variant="body1"
+              gutterBottom
+              sx={{ color: "rgba(0, 0, 0, 0.3)" }}
+            >
+              + Add Ingredient
+            </Typography>
+          </Box>
+        </Grid>
       </Grid>
-      <Box sx={{ height: "20px" }}></Box>
-      <Box
-        sx={{
-          border: "2px solid rgba(0, 0, 0, 0.1)",
-          height: "100px",
-          borderRadius: "1",
-          borderStyle: "dashed",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onClick={handleClickOpen}
-      >
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ color: "rgba(0, 0, 0, 0.3)" }}
-        >
-          + Add Ingredient
-        </Typography>
-      </Box>
-
       <Box
         sx={{
           margin: "20px 0px 10px 0px",
@@ -241,7 +276,7 @@ const PrimaryDetails = (props) => {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: "relative" }}>
+        <AppBar>
           <Toolbar>
             <IconButton
               edge="start"
@@ -252,13 +287,24 @@ const PrimaryDetails = (props) => {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Add Ingredient
+              {ingredientEdit ? "Edit " : "Add"} Ingredient
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleSaveIngredient}>
-              save
+            <Button
+              autoFocus
+              color="inherit"
+              onClick={() => {
+                if (ingredientEdit) {
+                  handleEditIngredient();
+                } else {
+                  handleSaveIngredient();
+                }
+              }}
+            >
+              {ingredientEdit ? "Update " : "Save"}
             </Button>
           </Toolbar>
         </AppBar>
+        <Toolbar />
         <Container maxWidth="xl" sx={{ marginY: 3 }}>
           <Stack spacing={2}>
             <Box>

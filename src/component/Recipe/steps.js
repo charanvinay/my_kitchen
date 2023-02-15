@@ -1,11 +1,20 @@
-import { Box, Button, Divider, Grid, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { getUniqueId } from "../../Common/Constants";
 import ErrorAlert from "../../Common/ErrorAlert";
-import { PhotoCamera } from "@mui/icons-material";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import ImageIcon from '@mui/icons-material/Image';
+import { grey } from "@mui/material/colors";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
@@ -95,7 +104,7 @@ const RecipeSteps = (props) => {
     let errors = [];
     steps.map((step) => {
       step["errors"] = [];
-      if(!Boolean(step.value)){
+      if (!Boolean(step.value)) {
         step["errors"].push({ message: "* Please fill this step" });
         errors.push(false);
       }
@@ -118,12 +127,61 @@ const RecipeSteps = (props) => {
                   {`Step ${skey + 1}`}
                 </Typography>
                 <Suspense fallback={<CKeditor />}>
-                  <div className="ckeditor">
+                  <div className="ckeditor" style={{ position: "relative" }}>
                     <CKeditorRender
                       value={step.value}
                       id={step.id}
                       handleChanges={handleChanges}
                     />
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        position: "absolute",
+                        top: 9,
+                        right: 9,
+                      }}
+                    >
+                      <Button
+                        component="label"
+                        sx={{
+                          minWidth: "20px",
+                          color: grey[700],
+                          padding: "0px 6px",
+                        }}
+                      >
+                        <ImageIcon color="black" />
+                        <input
+                          hidden
+                          accept="image/*"
+                          type="file"
+                          name="imgSrc"
+                          onChange={(e) =>
+                            handleChanges(step.id, e.target.files[0], "image")
+                          }
+                        />
+                      </Button>
+                      <Button
+                        component="label"
+                        sx={{
+                          minWidth: "20px",
+                          padding: "1px 0px 0px 0px",
+                          color: grey[700],
+                        }}
+                      >
+                        <CameraAltIcon color="black" />
+                        <input
+                          hidden
+                          accept="image/*"
+                          type="file"
+                          capture="user"
+                          name="imgSrc"
+                          onChange={(e) =>
+                            handleChanges(step.id, e.target.files[0], "image")
+                          }
+                        />
+                      </Button>
+                    </Box>
                   </div>
                 </Suspense>
                 {step.errors.map((error, ekey) => {
@@ -133,9 +191,7 @@ const RecipeSteps = (props) => {
                     </Typography>
                   );
                 })}
-                <Box sx={{ marginY: "15px" }}>
-                  <Divider />
-                </Box>
+                <Box sx={{ marginY: "15px" }}>{step.imgSrc && <Divider />}</Box>
                 <Grid container spacing={2}>
                   {step.imgSrc && (
                     <Grid item xs={12} md>
@@ -145,7 +201,7 @@ const RecipeSteps = (props) => {
                       />
                     </Grid>
                   )}
-                  <Grid item xs={12} md>
+                  {/* <Grid item xs={12} md>
                     <Button
                       component="label"
                       sx={{
@@ -185,7 +241,7 @@ const RecipeSteps = (props) => {
                         />
                       </Stack>
                     </Button>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </Box>
             );

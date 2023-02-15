@@ -15,7 +15,6 @@ import React, { lazy, Suspense, useEffect, useState } from "react";
 import { getUniqueId } from "../../Common/Constants";
 import CloseIcon from "@mui/icons-material/Close";
 import ErrorAlert from "../../Common/ErrorAlert";
-import { PhotoCamera } from "@mui/icons-material";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
@@ -23,8 +22,10 @@ import CompleteRecipe from "./complete_recipe";
 import { useNavigate } from "react-router-dom";
 import { db, auth } from "../../services/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { query, collection,addDoc,  where, getDocs } from "firebase/firestore";
-
+import { query, collection, addDoc, where, getDocs } from "firebase/firestore";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import ImageIcon from '@mui/icons-material/Image';
+import { grey } from "@mui/material/colors";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
@@ -129,17 +130,17 @@ const Finish = (props) => {
 
   const goToNextPage = () => {
     setformValues({ ...formValues, finish: finish });
-    handleClickOpen()
+    handleClickOpen();
   };
 
   const handleValidation = () => {
     let errors = [];
     finish["errors"] = [];
-    if(!Boolean(finish.value)){
+    if (!Boolean(finish.value)) {
       finish["errors"].push({ message: "Please fill the final step" });
       errors.push(false);
     }
-    if(!Boolean(finish.imgSrc)){
+    if (!Boolean(finish.imgSrc)) {
       finish["errors"].push({ message: "Please Upload the final image" });
       errors.push(false);
     }
@@ -152,14 +153,14 @@ const Finish = (props) => {
       let recipe_obj = {
         uid: loggedUser.uid,
         ...formValues,
-      }
+      };
       console.log(recipe_obj);
       await addDoc(collection(db, "recipes"), recipe_obj);
-      navigate("/home")
+      navigate("/home");
     } catch (error) {
       console.log(error);
     }
-    handleClose()
+    handleClose();
   };
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
@@ -173,17 +174,64 @@ const Finish = (props) => {
               Final Step
             </Typography>
             <Suspense fallback={<CKeditor />}>
-              <div className="ckeditor">
+              <div className="ckeditor" style={{ position: "relative" }}>
                 <CKeditorRender
                   value={finish.value}
                   id={finish.id}
                   handleChanges={handleChanges}
                 />
+                <Box
+                  sx={{
+                    display:"flex",
+                    alignItems: "center",
+                    position: "absolute",
+                    top: 9,
+                    right: 9,
+                  }}
+                >
+                  <Button
+                    component="label"
+                    sx={{
+                      minWidth: "20px",
+                      color: grey[700],
+                      padding: "0px 6px",
+                    }}
+                  >
+                    <ImageIcon color="black" />
+                    <input
+                      hidden
+                      accept="image/*"
+                      type="file"
+                      name="imgSrc"
+                      onChange={(e) =>
+                        handleChanges(finish.id, e.target.files[0], "image")
+                      }
+                    />
+                  </Button>
+                  <Button
+                    component="label"
+                    sx={{
+                      minWidth: "20px",
+                      padding: "1px 0px 0px 0px",
+                      color: grey[700],
+                    }}
+                  >
+                    <CameraAltIcon color="black" />
+                    <input
+                      hidden
+                      accept="image/*"
+                      type="file"
+                      capture="user"
+                      name="imgSrc"
+                      onChange={(e) =>
+                        handleChanges(finish.id, e.target.files[0], "image")
+                      }
+                    />
+                  </Button>
+                </Box>
               </div>
             </Suspense>
-            <Box sx={{ marginY: "15px" }}>
-              <Divider />
-            </Box>
+            <Box sx={{ marginY: "15px" }}>{finish.imgSrc && <Divider />}</Box>
             <Grid container spacing={2}>
               {finish.imgSrc && (
                 <Grid item xs={12} md>
@@ -193,7 +241,7 @@ const Finish = (props) => {
                   />
                 </Grid>
               )}
-              <Grid item xs={12} md>
+              {/* <Grid item xs={12} md>
                 <Button
                   component="label"
                   sx={{
@@ -231,7 +279,7 @@ const Finish = (props) => {
                     />
                   </Stack>
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Box>
           <Box
@@ -271,7 +319,11 @@ const Finish = (props) => {
             >
               <CloseIcon />
             </IconButton>
-            <Typography sx={{ ml: 2, flex: 1, textAlign:"center" }} variant="h6" component="div">
+            <Typography
+              sx={{ ml: 2, flex: 1, textAlign: "center" }}
+              variant="h6"
+              component="div"
+            >
               Preview
             </Typography>
             <Button variant="outlined" color="inherit" onClick={handleFinish}>
