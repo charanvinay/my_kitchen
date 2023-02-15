@@ -6,6 +6,8 @@ import {
   Dialog,
   Grid,
   IconButton,
+  MenuItem,
+  Select,
   Slide,
   Stack,
   TextField,
@@ -54,15 +56,12 @@ const PrimaryDetails = (props) => {
 
   const handleIngredientChanges = (e) => {
     const { name, value } = e.target;
-    // console.log(name);
     if (name == "title") {
       setIngredient({ ...ingredient, [name]: value });
     } else {
-      // console.log(e);
       let img = URL.createObjectURL(e.target.files[0]);
       setIngredient({ ...ingredient, [name]: img });
     }
-    // console.log(ingredient);
   };
 
   const handleSubmit = (e) => {
@@ -74,6 +73,7 @@ const PrimaryDetails = (props) => {
       let form = {
         id: getUniqueId(),
         title: formValues.title,
+        type: formValues.type,
         ingredients: formValues.ingredients,
         steps: formValues.steps,
         finish: formValues.finish,
@@ -112,34 +112,68 @@ const PrimaryDetails = (props) => {
     if (!values.title) {
       errors.title = "Please enter the title of your recipe";
     }
-    if (values.ingredients.length < 2) {
-      errors.description = "Add minimum two ingredients";
+    if (!values.type) {
+      errors.type = "Please enter the type of your recipe";
+    }
+    if (values.ingredients.length < 1) {
+      errors.description = "Add minimum one ingredient";
     }
     return errors;
   };
 
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
-      <Typography
-        variant="subtitle2"
-        sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
-      >
-        Title
-      </Typography>
-
-      <TextField
-        InputProps={{
-          style: {
-            letterSpacing: 0.6,
-          },
-          placeholder: "Eg: Chicken Biryani ",
-        }}
-        fullWidth
-        variant="outlined"
-        name="title"
-        value={formValues.title}
-        onChange={handleChanges}
-      />
+      <Grid container spacing={1}>
+        <Grid item xs={12} md={6} key={ingredient.id}>
+          <Typography
+            variant="subtitle2"
+            sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
+          >
+            Title
+          </Typography>
+          <TextField
+            InputProps={{
+              style: {
+                letterSpacing: 0.6,
+              },
+              placeholder: "Eg: Chicken Biryani ",
+            }}
+            fullWidth
+            variant="outlined"
+            name="title"
+            value={formValues.title}
+            onChange={handleChanges}
+          />
+        </Grid>
+        <Grid item xs={12} md={6} key={ingredient.id}>
+          <Typography
+            variant="subtitle2"
+            sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
+          >
+            Type
+          </Typography>
+          <Select
+            value={formValues.type || ""}
+            displayEmpty
+            name="type"
+            sx={{ width: "100%" }}
+            renderValue={(selected) => {
+              if (!Boolean(selected)) {
+                return <p style={{color: "rgb(191 191 191)"}}>Eg: Non-Veg</p>;
+              }
+              return selected;
+            }}
+            onChange={handleChanges}
+          >
+            <MenuItem value={"Veg"}>Veg</MenuItem>
+            <MenuItem value={"Non-Veg"}>Non-Veg</MenuItem>
+            <MenuItem value={"Egg"}>Egg</MenuItem>
+            <MenuItem value={"Breakfast"}>Breakfast</MenuItem>
+            <MenuItem value={"Snacks"}>Snacks</MenuItem>
+            <MenuItem value={"Beverage"}>Beverage</MenuItem>
+          </Select>
+        </Grid>
+      </Grid>
       <Box sx={{ height: "10px" }}></Box>
       <Typography
         variant="subtitle2"
@@ -153,7 +187,10 @@ const PrimaryDetails = (props) => {
           formValues.ingredients.map((ingredient) => {
             return (
               <Grid item xs={6} md={3} key={ingredient.id}>
-                <ImgWithLabelCard imgSrc={ingredient.imgSrc} title={ingredient.title}/>
+                <ImgWithLabelCard
+                  imgSrc={ingredient.imgSrc}
+                  title={ingredient.title}
+                />
               </Grid>
             );
           })}
@@ -190,7 +227,9 @@ const PrimaryDetails = (props) => {
         }}
       >
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined" onClick={()=>navigate('/home')}>Cancel</Button>
+          <Button variant="outlined" onClick={() => navigate("/home")}>
+            Cancel
+          </Button>
           <Button variant="contained" onClick={handleSubmit}>
             Next
           </Button>
