@@ -54,34 +54,12 @@ const RecipeCard = (props) => {
           bottom: 0,
         }}
       >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="flex-end"
-          spacing={1}
-        >
-          <Stack>
-            <Typography variant="h6" color="white">
-              {title}
-            </Typography>
-            <Typography variant="subtitle2" color="white">
-              {" by Shrimp and Chorizo Paella"}
-            </Typography>
-          </Stack>
-          <IconButton size="large">
-            {liked ? (
-              <FavoriteIcon
-                sx={{ fontSize: "1.5rem", color: "white" }}
-                onClick={() => setLiked(!liked)}
-              />
-            ) : (
-              <FavoriteBorderIcon
-                sx={{ fontSize: "1.5rem", color: "white" }}
-                onClick={() => setLiked(!liked)}
-              />
-            )}
-          </IconButton>
-        </Stack>
+        <Typography variant="h6" color="white">
+          {title}
+        </Typography>
+        <Typography variant="subtitle2" color="white">
+          {" by Shrimp and Chorizo Paella"}
+        </Typography>
       </CardContent>
       <div
         style={{
@@ -94,6 +72,26 @@ const RecipeCard = (props) => {
           width: "100%",
         }}
       />
+      <IconButton
+        size="large"
+        sx={{
+          position: "absolute",
+          top: 5,
+          right: 5,
+          backgroundColor: "rgba(0,0,0,0.2)",
+        }}
+        onClick={() => setLiked(!liked)}
+      >
+        {liked ? (
+          <FavoriteIcon
+            sx={{ fontSize: "1.5rem", color: "white" }}
+          />
+        ) : (
+          <FavoriteBorderIcon
+            sx={{ fontSize: "1.5rem", color: "white" }}
+          />
+        )}
+      </IconButton>
       <img
         style={{
           height: "60%",
