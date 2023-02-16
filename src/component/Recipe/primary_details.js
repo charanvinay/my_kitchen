@@ -361,7 +361,7 @@ const PrimaryDetails = (props) => {
                   accept="image/*"
                   type="file"
                   name="imgSrc"
-                  capture="user"
+                  capture
                   onChange={handleIngredientChanges}
                 />
               </Stack>
