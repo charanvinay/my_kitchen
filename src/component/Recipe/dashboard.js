@@ -40,7 +40,6 @@ const Dashboard = () => {
     if (user_docs.docs.length > 0) {
       let recipes = [];
       user_docs.docs.map((doc) => {
-        console.log(doc);
         recipes.push({ id: doc.id, ...doc.data() });
       });
       console.log(recipes);

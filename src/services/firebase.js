@@ -27,23 +27,23 @@ const signInWithGoogle = async () => {
   try {
     const res = await signInWithPopup(auth, googleProvider);
     const user = res.user;
+    let user_obj = {
+      uid: user.uid,
+      name: user.displayName,
+      email: user.email,
+      authProvider: "google",
+      accessToken: user.accessToken,
+      photoURL: user.photoURL,
+    };
+    localStorage.setItem('loggedUser', JSON.stringify(user_obj));
     let loggedUser = query(
       collection(db, "users"),
       where("uid", "==", user.uid)
     );
     let user_docs = await getDocs(loggedUser);
     if (user_docs.docs.length === 0) {
-      let user_obj = {
-        uid: user.uid,
-        name: user.displayName,
-        email: user.email,
-        authProvider: "google",
-        accessToken: user.accessToken,
-        photoURL: user.photoURL,
-      };
       await addDoc(collection(db, "users"), user_obj);
     }
-    console.log(user_docs);
   } catch (error) {
     console.log(error);
   }

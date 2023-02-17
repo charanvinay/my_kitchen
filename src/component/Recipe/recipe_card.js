@@ -20,7 +20,7 @@ import GradientBLACK from "../../Assets/20210113_083213.png";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const RecipeCard = (props) => {
-  let { title, finish } = props.recipe;
+  let { title, name, finish } = props.recipe;
   const [liked, setLiked] = useState(false);
 
   return (
@@ -57,8 +57,8 @@ const RecipeCard = (props) => {
         <Typography variant="h6" color="white">
           {title}
         </Typography>
-        <Typography variant="subtitle2" color="white">
-          {" by Shrimp and Chorizo Paella"}
+        <Typography variant="subtitle2" color="white" sx={{textTransform: 'capitalize'}}>
+          {` by ${name}`}
         </Typography>
       </CardContent>
       <div

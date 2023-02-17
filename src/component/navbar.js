@@ -11,10 +11,9 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import ExploreIcon from "@mui/icons-material/Explore";
-import { db, auth, logOut } from "../services/firebase";
+import { auth, logOut } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { query, collection, where, getDocs } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
 import { getLoggedUser, handleLoggedUser } from "../redux/slices/userSlice";
 
@@ -24,7 +23,7 @@ const settings = ["Profile", "Account", "Dashboard", "Logout"];
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const loggedUser = useSelector(getLoggedUser);
@@ -39,21 +38,12 @@ function Navbar() {
     fetchUserDetails();
   }, [user, loading]);
 
-  const fetchUserDetails = async () => {
-    try {
-      let logged_user = query(
-        collection(db, "users"),
-        where("uid", "==", user?.uid)
-      );
-      let user_docs = await getDocs(logged_user);
-      // console.log(user_docs.docs[0].data());
-      if (user_docs.docs.length > 0) {
-        dispatch(handleLoggedUser(user_docs.docs[0].data()));
-      } else {
-        dispatch(handleLoggedUser({}));
-      }
-    } catch (error) {
-      console.log(error);
+  const fetchUserDetails = () => {
+    let user_obj = JSON.parse(localStorage.getItem('loggedUser'));
+    if (user_obj) {
+      dispatch(handleLoggedUser(user_obj));
+    } else {
+      dispatch(handleLoggedUser({}));
     }
   };
 
@@ -71,6 +61,7 @@ function Navbar() {
   const handleCloseUserMenu = (setting) => {
     if (setting === "Logout") {
       logOut();
+      localStorage.removeItem('loggedUser');
     }
     setAnchorElUser(null);
   };
