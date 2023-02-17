@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Divider,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, Grid, Stack, Typography } from "@mui/material";
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { getUniqueId } from "../../Common/Constants";
 import ErrorAlert from "../../Common/ErrorAlert";
@@ -13,31 +6,28 @@ import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import ImageIcon from '@mui/icons-material/Image';
+import ImageIcon from "@mui/icons-material/Image";
 import { grey } from "@mui/material/colors";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addItem,
+  editStep,
+  getRecipe,
+  handleStepValidation,
+} from "../../redux/slices/recipeSlice";
+import { handleBack, handleNext } from "../../redux/slices/userSlice";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
 const RecipeSteps = (props) => {
-  let { formValues, setformValues } = props;
-  const intialStepObj = {
-    id: getUniqueId(),
-    errors: [],
-    imgSrc: "",
-    value: null,
-  };
-  const [steps, setSteps] = useState([]);
   const [snackopen, setsnackOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
   const [displayEditors, setDisplayEditors] = useState(false);
 
-  useEffect(() => {
-    setSteps(
-      formValues["steps"] && formValues["steps"].length
-        ? [...formValues["steps"]]
-        : [intialStepObj]
-    );
-  }, []);
+  const recipe = useSelector(getRecipe);
+  console.log(recipe);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,18 +44,11 @@ const RecipeSteps = (props) => {
   };
 
   const handleChanges = (id, val, type) => {
-    steps.map((step) => {
-      if (step.id === id) {
-        if (type === "image") {
-          let img = URL.createObjectURL(val);
-          step.imgSrc = img;
-        } else {
-          step.value = val;
-        }
-      }
-      return step;
-    });
-    setSteps([...steps]);
+    let v = val;
+    if (type === "image") {
+      v = URL.createObjectURL(val);
+    }
+    dispatch(editStep({ id, val: v, type }));
   };
 
   const handleSubmit = (e) => {
@@ -80,13 +63,11 @@ const RecipeSteps = (props) => {
   };
 
   const goToPreviousPage = () => {
-    setformValues({ ...formValues, steps: steps });
-    props.handleBack();
+    dispatch(handleBack());
   };
 
   const goToNextPage = () => {
-    setformValues({ ...formValues, steps: steps });
-    props.handleNext();
+    dispatch(handleNext());
   };
 
   const handleAdd = () => {
@@ -96,28 +77,24 @@ const RecipeSteps = (props) => {
       imgSrc: "",
       value: null,
     };
-    setSteps([...steps, newStep]);
-    // console.log(steps);
+    dispatch(addItem({ name: "steps", value: newStep }));
   };
 
   const handleValidation = () => {
+    dispatch(handleStepValidation());
     let errors = [];
-    steps.map((step) => {
-      step["errors"] = [];
+    recipe.steps.map((step) => {
       if (!Boolean(step.value)) {
-        step["errors"].push({ message: "* Please fill this step" });
         errors.push(false);
       }
     });
-    setSteps([...steps]);
-    // console.log(steps);
     return errors;
   };
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
       {displayEditors ? (
         <>
-          {steps?.map((step, skey) => {
+          {recipe.steps?.map((step, skey) => {
             return (
               <Box key={step.id}>
                 <Typography
@@ -184,7 +161,7 @@ const RecipeSteps = (props) => {
                     </Box>
                   </div>
                 </Suspense>
-                {step.errors.map((error, ekey) => {
+                {step?.errors.map((error, ekey) => {
                   return (
                     <Typography key={ekey} variant="caption" color="error">
                       {error.message}
@@ -201,47 +178,6 @@ const RecipeSteps = (props) => {
                       />
                     </Grid>
                   )}
-                  {/* <Grid item xs={12} md>
-                    <Button
-                      component="label"
-                      sx={{
-                        border: "2px solid rgba(0, 0, 0, 0.1)",
-                        height: 120,
-                        width: "100%",
-                        borderRadius: "1",
-                        textTransform: "none",
-                        borderStyle: "dashed",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                          borderStyle: "dashed",
-                          outline: "none",
-                        },
-                      }}
-                    >
-                      <Stack direction="row" spacing={1}>
-                        <PhotoCamera sx={{ color: "rgba(0, 0, 0, 0.2)" }} />
-                        <Typography
-                          variant="body1"
-                          gutterBottom
-                          sx={{ color: "rgba(0, 0, 0, 0.3)" }}
-                        >
-                          {step.imgSrc
-                            ? `Change Step ${skey + 1} Image`
-                            : `Upload Image (Optional)`}
-                        </Typography>
-                        <input
-                          hidden
-                          accept="image/*"
-                          type="file"
-                          capture="user"
-                          name="imgSrc"
-                          onChange={(e) =>
-                            handleChanges(step.id, e.target.files[0], "image")
-                          }
-                        />
-                      </Stack>
-                    </Button>
-                  </Grid> */}
                 </Grid>
               </Box>
             );

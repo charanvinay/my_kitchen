@@ -17,25 +17,35 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import React, { useState } from "react";
-import { Timestamp } from "firebase/firestore";
 import ErrorAlert from "../../Common/ErrorAlert";
 import { getUniqueId } from "../../Common/Constants";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addItem,
+  editItem,
+  getRecipe,
+  handlePrimitiveState,
+} from "../../redux/slices/recipeSlice";
+import moment from "moment";
+import { handleNext } from "../../redux/slices/userSlice";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const PrimaryDetails = (props) => {
-  let { formValues, setformValues } = props;
-  const initialIngredientValues = { title: "", imgSrc: "" };
+  const initialIngredientValues = { id: "", title: "", imgSrc: "" };
   const [ingredient, setIngredient] = useState(initialIngredientValues);
   const [modalOpen, setModalOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
   const [snackopen, setsnackOpen] = useState(false);
   const [ingredientEdit, setIngredientEdit] = useState(false);
   const navigate = useNavigate();
+  const recipe = useSelector(getRecipe);
+  const dispatch = useDispatch();
+  console.log(recipe);
 
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
@@ -52,7 +62,7 @@ const PrimaryDetails = (props) => {
 
   const handleChanges = (e) => {
     const { name, value } = e.target;
-    setformValues({ ...formValues, [name]: value });
+    dispatch(handlePrimitiveState({ name, value }));
   };
 
   const handleIngredientChanges = (e) => {
@@ -67,22 +77,15 @@ const PrimaryDetails = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (Object.values(handleValidation(formValues)).length !== 0) {
-      setErrorText(Object.values(handleValidation(formValues))[0]);
+    if (Object.values(handleValidation(recipe)).length !== 0) {
+      setErrorText(Object.values(handleValidation(recipe))[0]);
       setsnackOpen(true);
     } else {
-      let form = {
-        id: getUniqueId(),
-        title: formValues.title,
-        type: formValues.type,
-        ingredients: formValues.ingredients,
-        steps: formValues.steps,
-        finish: formValues.finish,
-        createdAt: Timestamp.now(),
-      };
-      setformValues(form);
-      console.log(formValues);
-      props.handleNext();
+      dispatch(handlePrimitiveState({ name: "id", value: getUniqueId() }));
+      dispatch(
+        handlePrimitiveState({ name: "createdAt", value: moment().format() })
+      );
+      dispatch(handleNext());
     }
   };
 
@@ -98,12 +101,9 @@ const PrimaryDetails = (props) => {
         id: getUniqueId(),
         title: ingredient.title,
         imgSrc: ingredient.imgSrc,
-        createdAt: Timestamp.now(),
+        createdAt: moment().format(),
       };
-      let form = formValues;
-      form.ingredients.push(ing);
-      setformValues(form);
-      console.log(form);
+      dispatch(addItem({ name: "ingredients", value: ing }));
       handleClose();
     }
   };
@@ -116,19 +116,15 @@ const PrimaryDetails = (props) => {
       setErrorText("Please upload the Ingredient image");
       setsnackOpen(true);
     } else {
-      let form = formValues;
-      form.ingredients.map((ing) => {
-        if (ing.id == ingredient.id) {
-          ing.id = ingredient.id;
-          ing.title = ingredient.title;
-          ing.imgSrc = ingredient.imgSrc;
-          ing.createdAt = Timestamp.now();
-        }
-      });
-      setformValues(form);
-      console.log(form);
+      let ing = {
+        id: ingredient.id,
+        title: ingredient.title,
+        imgSrc: ingredient.imgSrc,
+        createdAt: moment().format(),
+      };
+      dispatch(editItem({ name: "ingredients", value: ing }));
       handleClose();
-      setIngredientEdit(false)
+      setIngredientEdit(false);
     }
   };
 
@@ -166,7 +162,7 @@ const PrimaryDetails = (props) => {
             fullWidth
             variant="outlined"
             name="title"
-            value={formValues.title}
+            value={recipe.title}
             onChange={handleChanges}
           />
         </Grid>
@@ -178,7 +174,7 @@ const PrimaryDetails = (props) => {
             Type
           </Typography>
           <Select
-            value={formValues.type || ""}
+            value={recipe.type || ""}
             displayEmpty
             name="type"
             sx={{ width: "100%" }}
@@ -208,8 +204,8 @@ const PrimaryDetails = (props) => {
         Ingredients
       </Typography>
       <Grid container spacing={1}>
-        {formValues.ingredients.length > 0 &&
-          formValues.ingredients.map((ingredient) => {
+        {recipe.ingredients.length > 0 &&
+          recipe.ingredients.map((ingredient) => {
             return (
               <Grid
                 item

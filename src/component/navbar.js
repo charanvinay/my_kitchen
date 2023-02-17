@@ -15,6 +15,8 @@ import { db, auth, logOut } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { query, collection, where, getDocs } from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux";
+import { getLoggedUser, handleLoggedUser } from "../redux/slices/userSlice";
 
 const pages = [{ id: 1, tooltip: "Explore", route: "/explore" }];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -23,8 +25,9 @@ function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [user, loading, error] = useAuthState(auth);
-  const [loggedUser, setLoggedUser] = useState({});
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const loggedUser = useSelector(getLoggedUser);
 
   useEffect(() => {
     if (loading) {
@@ -45,9 +48,9 @@ function Navbar() {
       let user_docs = await getDocs(logged_user);
       // console.log(user_docs.docs[0].data());
       if (user_docs.docs.length > 0) {
-        setLoggedUser(user_docs.docs[0].data());
+        dispatch(handleLoggedUser(user_docs.docs[0].data()));
       } else {
-        setLoggedUser({});
+        dispatch(handleLoggedUser({}));
       }
     } catch (error) {
       console.log(error);
@@ -155,7 +158,11 @@ function Navbar() {
           >
             {pages.map((page) => (
               <Tooltip title={page.tooltip} key={page.tooltip}>
-                <IconButton size="large" onClick={()=>navigate(page.route)} color="inherit">
+                <IconButton
+                  size="large"
+                  onClick={() => navigate(page.route)}
+                  color="inherit"
+                >
                   <ExploreIcon alt={page.tooltip} />
                 </IconButton>
               </Tooltip>
@@ -165,10 +172,18 @@ function Navbar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar
-                  alt={loggedUser?.name || "User Image"}
-                  src={loggedUser?.photoURL || "/static/images/avatar/2.jpg"}
-                />
+                {loggedUser.photoURL && (
+                  <Avatar
+                    alt={"User Image"}
+                    src={loggedUser.photoURL}
+                  />
+                )}
+                {!loggedUser.photoURL && (
+                  <Avatar
+                    alt={"User Image"}
+                    src={"/static/images/avatar/2.jpg"}
+                  />
+                )}
               </IconButton>
             </Tooltip>
             <Menu

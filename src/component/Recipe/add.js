@@ -8,8 +8,9 @@ import { useState } from "react";
 import { useEffect } from "react";
 import PrimaryDetails from "./primary_details";
 import RecipeSteps from "./steps";
-import { Stack } from "@mui/material";
 import Finish from "./finish";
+import { useSelector } from "react-redux";
+import { getActiveStep } from "../../redux/slices/userSlice";
 
 const steps = [
   {
@@ -24,54 +25,17 @@ const steps = [
 ];
 
 export default function AddRecipe() {
-  const [activeStep, setActiveStep] = useState(0);
   const [isMobile, setIsMobile] = useState(true);
-  const initialValues = { title: "", ingredients: [], steps: [], finish: {} };
-  const [formValues, setformValues] = useState(initialValues);
+  const activeStep = useSelector(getActiveStep);
 
   // create an event listener
   useEffect(() => {
     setIsMobile(window.innerWidth < 800);
   }, []);
 
-  const handleNext = () => {
-    // console.log(formValues);
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    // console.log(formValues);
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
-  const cmp_PrimaryDetails = () => (
-    <PrimaryDetails
-      handleNext={handleNext}
-      handleBack={handleBack}
-      formValues={formValues}
-      setformValues={setformValues}
-    />
-  );
-  const cmp_RecipeSteps = () => (
-    <RecipeSteps
-      handleNext={handleNext}
-      handleBack={handleBack}
-      formValues={formValues}
-      setformValues={setformValues}
-    />
-  );
-  const cmp_Finish = () => (
-    <Finish
-      handleNext={handleNext}
-      handleBack={handleBack}
-      formValues={formValues}
-      setformValues={setformValues}
-    />
-  );
+  const cmp_PrimaryDetails = () => <PrimaryDetails />;
+  const cmp_RecipeSteps = () => <RecipeSteps />;
+  const cmp_Finish = () => <Finish />;
 
   return (
     <Box component="main" sx={{ paddingX: 3, paddingY: 6 }}>
