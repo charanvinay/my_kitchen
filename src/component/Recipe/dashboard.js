@@ -16,7 +16,7 @@ import NoData from "../../Assets/no_data_found.svg";
 import { grey } from "@mui/material/colors";
 
 const Dashboard = () => {
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const [recipesList, setRecipesList] = useState([]);
   const [loadding, setLoadding] = useState(true);
 
@@ -40,7 +40,7 @@ const Dashboard = () => {
     if (user_docs.docs.length > 0) {
       let recipes = [];
       user_docs.docs.map((doc) => {
-        recipes.push({ id: doc.id, ...doc.data() });
+        recipes.push({ _id: doc.id, ...doc.data() });
       });
       console.log(recipes);
       setRecipesList([...recipes]);
@@ -72,11 +72,11 @@ const Dashboard = () => {
         <Grid container spacing={3}>
           {recipesList?.map((recipe) => {
             return (
-              <Grid item xs={12} md={4} key={recipe.id}>
+              <Grid item xs={12} md={4} key={recipe._id}>
                 <RecipeCard
-                  key={recipe.id}
+                  key={recipe._id}
                   recipe={recipe}
-                  handleDelete={() => handleDelete(recipe.id)}
+                  handleDelete={() => handleDelete(recipe._id)}
                 />
               </Grid>
             );

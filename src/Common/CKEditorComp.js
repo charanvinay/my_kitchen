@@ -18,7 +18,7 @@ const CKEditorComp = (props) => {
       key={props.id}
       onChange={(event, editor) => {
         const data = editor.getData();
-        props.handleChanges(props.id, data, "editor");
+        props.handleChanges(data);
       }}
     />
   );

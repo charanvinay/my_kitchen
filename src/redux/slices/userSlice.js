@@ -14,6 +14,9 @@ export const userSlice = createSlice({
     handleBack: (state) => {
       state.activeStep -= 1;
     },
+    handleReset: (state) => {
+      state.activeStep = 0;
+    },
     handleLoggedUser: (state, action) => {
       state.loggedUser = action.payload;
     }
@@ -22,5 +25,5 @@ export const userSlice = createSlice({
 
 export const getActiveStep = (state) => state.userReducer.activeStep;
 export const getLoggedUser = (state) => state.userReducer.loggedUser;
-export const { handleNext, handleBack, handleLoggedUser } = userSlice.actions;
+export const { handleNext, handleBack, handleReset, handleLoggedUser } = userSlice.actions;
 export default userSlice.reducer;

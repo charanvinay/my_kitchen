@@ -1,21 +1,12 @@
-import { Box, Button, Divider, Grid, Stack, Typography } from "@mui/material";
 import React, { lazy, Suspense, useEffect, useState } from "react";
-import { getUniqueId } from "../../Common/Constants";
 import ErrorAlert from "../../Common/ErrorAlert";
-import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import ImageIcon from "@mui/icons-material/Image";
-import { grey } from "@mui/material/colors";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addItem,
-  editStep,
-  getRecipe,
-  handleStepValidation,
-} from "../../redux/slices/recipeSlice";
+import { getUniqueId } from "../../Common/Constants";
 import { handleBack, handleNext } from "../../redux/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, editItem, getRecipe } from "../../redux/slices/recipeSlice";
+import { Box, Button, Stack, Typography } from "@mui/material";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
@@ -43,22 +34,17 @@ const RecipeSteps = (props) => {
     setsnackOpen(false);
   };
 
-  const handleChanges = (id, val, type) => {
-    let v = val;
-    if (type === "image") {
-      v = URL.createObjectURL(val);
-    }
-    dispatch(editStep({ id, val: v, type }));
+  const handleChanges = (id, value, name, type) => {
+    dispatch(editItem({ id, name, value, type }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let errors = handleValidation();
-    if (!errors.includes(false)) {
-      goToNextPage();
-    } else {
+    if (Object.values(handleValidation()).length !== 0) {
+      setErrorText(Object.values(handleValidation())[0]);
       setsnackOpen(true);
-      setErrorText("Please fill all the steps");
+    } else {
+      goToNextPage();
     }
   };
 
@@ -74,18 +60,16 @@ const RecipeSteps = (props) => {
     let newStep = {
       id: getUniqueId(),
       errors: [],
-      imgSrc: "",
       value: null,
     };
     dispatch(addItem({ name: "steps", value: newStep }));
   };
 
   const handleValidation = () => {
-    dispatch(handleStepValidation());
-    let errors = [];
-    recipe.steps.map((step) => {
+    let errors = {};
+    recipe.steps.map((step, skey) => {
       if (!Boolean(step.value)) {
-        errors.push(false);
+        errors[`Step ${skey + 1}`] = `Please fill Step ${skey + 1}`;
       }
     });
     return errors;
@@ -108,77 +92,12 @@ const RecipeSteps = (props) => {
                     <CKeditorRender
                       value={step.value}
                       id={step.id}
-                      handleChanges={handleChanges}
+                      handleChanges={(e) =>
+                        handleChanges(step.id, e, "steps", "value")
+                      }
                     />
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        position: "absolute",
-                        top: 9,
-                        right: 9,
-                      }}
-                    >
-                      <Button
-                        component="label"
-                        sx={{
-                          minWidth: "20px",
-                          color: grey[700],
-                          padding: "0px 6px",
-                        }}
-                      >
-                        <ImageIcon color="black" />
-                        <input
-                          hidden
-                          accept="image/*"
-                          type="file"
-                          name="imgSrc"
-                          onChange={(e) =>
-                            handleChanges(step.id, e.target.files[0], "image")
-                          }
-                        />
-                      </Button>
-                      <Button
-                        component="label"
-                        sx={{
-                          minWidth: "20px",
-                          padding: "1px 0px 0px 0px",
-                          color: grey[700],
-                        }}
-                      >
-                        <CameraAltIcon color="black" />
-                        <input
-                          hidden
-                          accept="image/*"
-                          type="file"
-                          capture="user"
-                          name="imgSrc"
-                          onChange={(e) =>
-                            handleChanges(step.id, e.target.files[0], "image")
-                          }
-                        />
-                      </Button>
-                    </Box>
                   </div>
                 </Suspense>
-                {step?.errors.map((error, ekey) => {
-                  return (
-                    <Typography key={ekey} variant="caption" color="error">
-                      {error.message}
-                    </Typography>
-                  );
-                })}
-                <Box sx={{ marginY: "15px" }}>{step.imgSrc && <Divider />}</Box>
-                <Grid container spacing={2}>
-                  {step.imgSrc && (
-                    <Grid item xs={12} md>
-                      <ImgWithLabelCard
-                        imgSrc={step.imgSrc}
-                        title={`Step ${skey + 1} Image`}
-                      />
-                    </Grid>
-                  )}
-                </Grid>
               </Box>
             );
           })}

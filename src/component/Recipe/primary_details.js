@@ -1,50 +1,38 @@
 import {
-  AppBar,
   Box,
   Button,
-  Container,
-  Dialog,
+  Divider,
   Grid,
-  IconButton,
   MenuItem,
   Select,
-  Slide,
   Stack,
   TextField,
-  Toolbar,
   Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import React, { useState } from "react";
 import ErrorAlert from "../../Common/ErrorAlert";
 import { getUniqueId } from "../../Common/Constants";
-import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addItem,
+  deleteItem,
   editItem,
   getRecipe,
   handlePrimitiveState,
+  initialState,
+  setSelectedRecipe,
 } from "../../redux/slices/recipeSlice";
 import moment from "moment";
 import { handleNext } from "../../redux/slices/userSlice";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import HeadingMD from "../../Common/HeadingMD";
 
 const PrimaryDetails = (props) => {
-  const initialIngredientValues = { id: "", title: "", imgSrc: "" };
-  const [ingredient, setIngredient] = useState(initialIngredientValues);
-  const [modalOpen, setModalOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
   const [snackopen, setsnackOpen] = useState(false);
-  const [ingredientEdit, setIngredientEdit] = useState(false);
   const navigate = useNavigate();
-  const recipe = useSelector(getRecipe);
   const dispatch = useDispatch();
+  const recipe = useSelector(getRecipe);
   console.log(recipe);
 
   const handleCloseSnackbar = (event, reason) => {
@@ -54,25 +42,14 @@ const PrimaryDetails = (props) => {
     setsnackOpen(false);
   };
 
-  const handleClickOpen = () => setModalOpen(true);
-  const handleClose = () => {
-    setModalOpen(false);
-    setIngredient(initialIngredientValues);
-  };
-
   const handleChanges = (e) => {
     const { name, value } = e.target;
     dispatch(handlePrimitiveState({ name, value }));
   };
 
-  const handleIngredientChanges = (e) => {
-    const { name, value } = e.target;
-    if (name == "title") {
-      setIngredient({ ...ingredient, [name]: value });
-    } else {
-      let img = URL.createObjectURL(e.target.files[0]);
-      setIngredient({ ...ingredient, [name]: img });
-    }
+  const handleIngredientChanges = (id, e, name, type) => {
+    const { value } = e.target;
+    dispatch(editItem({ id, name, value, type }));
   };
 
   const handleSubmit = (e) => {
@@ -89,43 +66,14 @@ const PrimaryDetails = (props) => {
     }
   };
 
-  const handleSaveIngredient = () => {
-    if (!ingredient.title) {
-      setErrorText("Enter title of the Ingredient");
-      setsnackOpen(true);
-    } else if (!ingredient.imgSrc) {
-      setErrorText("Please upload the Ingredient image");
-      setsnackOpen(true);
-    } else {
-      let ing = {
-        id: getUniqueId(),
-        title: ingredient.title,
-        imgSrc: ingredient.imgSrc,
-        createdAt: moment().format(),
-      };
-      dispatch(addItem({ name: "ingredients", value: ing }));
-      handleClose();
-    }
-  };
-
-  const handleEditIngredient = () => {
-    if (!ingredient.title) {
-      setErrorText("Enter title of the Ingredient");
-      setsnackOpen(true);
-    } else if (!ingredient.imgSrc) {
-      setErrorText("Please upload the Ingredient image");
-      setsnackOpen(true);
-    } else {
-      let ing = {
-        id: ingredient.id,
-        title: ingredient.title,
-        imgSrc: ingredient.imgSrc,
-        createdAt: moment().format(),
-      };
-      dispatch(editItem({ name: "ingredients", value: ing }));
-      handleClose();
-      setIngredientEdit(false);
-    }
+  const handleAdd = () => {
+    let newStep = {
+      id: getUniqueId(),
+      errors: [],
+      units: "",
+      value: "",
+    };
+    dispatch(addItem({ name: "ingredients", value: newStep }));
   };
 
   const handleValidation = (values) => {
@@ -138,6 +86,18 @@ const PrimaryDetails = (props) => {
     }
     if (values.ingredients.length < 1) {
       errors.description = "Add minimum one ingredient";
+    } else {
+      values.ingredients.map((ingredient, ikey) => {
+        if (!Boolean(ingredient.value)) {
+          errors[
+            `Ingredient ${ikey + 1}`
+          ] = `Please enter the name of Ingredient ${ikey + 1}`;
+        } else if (!Boolean(ingredient.units)) {
+          errors[
+            `Ingredient ${ikey + 1}`
+          ] = `Please enter the units of Ingredient ${ikey + 1}`;
+        }
+      });
     }
     return errors;
   };
@@ -146,12 +106,7 @@ const PrimaryDetails = (props) => {
     <Box component="main" sx={{ px: 1, py: 2 }}>
       <Grid container spacing={1}>
         <Grid item xs={12} md={6}>
-          <Typography
-            variant="subtitle2"
-            sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
-          >
-            Title
-          </Typography>
+          <HeadingMD text={"Title"} />
           <TextField
             InputProps={{
               style: {
@@ -166,13 +121,8 @@ const PrimaryDetails = (props) => {
             onChange={handleChanges}
           />
         </Grid>
-        <Grid item xs={12} md={6} key={ingredient.id}>
-          <Typography
-            variant="subtitle2"
-            sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
-          >
-            Type
-          </Typography>
+        <Grid item xs={12} md={6}>
+          <HeadingMD text={"Type"} />
           <Select
             value={recipe.type || ""}
             displayEmpty
@@ -196,59 +146,97 @@ const PrimaryDetails = (props) => {
         </Grid>
       </Grid>
       <Box sx={{ height: "10px" }}></Box>
-      <Typography
-        variant="subtitle2"
-        //   color="#fff"
-        sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
-      >
-        Ingredients
-      </Typography>
+      <HeadingMD text={"Ingredients"} />
       <Grid container spacing={1}>
         {recipe.ingredients.length > 0 &&
-          recipe.ingredients.map((ingredient) => {
+          recipe.ingredients.map((ingredient, ikey) => {
             return (
-              <Grid
-                item
-                xs={6}
-                md={3}
-                key={ingredient.id}
-                onClick={() => {
-                  setIngredient(ingredient);
-                  setModalOpen(true);
-                  setIngredientEdit(true);
-                }}
-              >
-                <ImgWithLabelCard
-                  imgSrc={ingredient.imgSrc}
-                  title={ingredient.title}
-                />
+              <Grid item xs={12} md={12} key={ingredient.id}>
+                {ikey > 0 && (
+                  <Box sx={{ marginY: "15px", position: "relative" }}>
+                    <Divider textAlign="left">Ingredient {ikey + 1}</Divider>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      size="small"
+                      sx={{ position: "absolute", right: 0, top: -5 }}
+                      onClick={() =>
+                        dispatch(
+                          deleteItem({ name: "ingredients", id: ingredient.id })
+                        )
+                      }
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+                )}
+                <Grid container spacing={1}>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
+                    >
+                      Name
+                    </Typography>
+                    <TextField
+                      InputProps={{
+                        style: {
+                          letterSpacing: 0.6,
+                        },
+                        placeholder: "Eg: Salt ",
+                      }}
+                      fullWidth
+                      variant="outlined"
+                      name="title"
+                      value={ingredient.value}
+                      onChange={(e) =>
+                        handleIngredientChanges(
+                          ingredient.id,
+                          e,
+                          "ingredients",
+                          "value"
+                        )
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
+                    >
+                      Units
+                    </Typography>
+                    <TextField
+                      InputProps={{
+                        style: {
+                          letterSpacing: 0.6,
+                        },
+                        placeholder: "Eg: 1 tbsp ",
+                      }}
+                      fullWidth
+                      variant="outlined"
+                      name="title"
+                      value={ingredient.units}
+                      onChange={(e) =>
+                        handleIngredientChanges(
+                          ingredient.id,
+                          e,
+                          "ingredients",
+                          "units"
+                        )
+                      }
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
             );
           })}
-        <Grid item xs>
-          <Box
-            sx={{
-              border: "2px solid rgba(0, 0, 0, 0.1)",
-              height: 120,
-              borderRadius: "1",
-              borderStyle: "dashed",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={handleClickOpen}
-          >
-            <Typography
-              variant="body1"
-              gutterBottom
-              sx={{ color: "rgba(0, 0, 0, 0.3)" }}
-            >
-              + Add Ingredient
-            </Typography>
-          </Box>
-        </Grid>
       </Grid>
+      <Box sx={{ margin: "20px 0px 10px 0px" }}>
+        <Button fullWidth={true} onClick={handleAdd} color="success">
+          + Add Ingredient
+        </Button>
+      </Box>
       <Box
         sx={{
           margin: "20px 0px 10px 0px",
@@ -258,7 +246,13 @@ const PrimaryDetails = (props) => {
         }}
       >
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined" onClick={() => navigate("/home")}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              navigate("/home");
+              dispatch(setSelectedRecipe(initialState));
+            }}
+          >
             Cancel
           </Button>
           <Button variant="contained" onClick={handleSubmit}>
@@ -266,105 +260,6 @@ const PrimaryDetails = (props) => {
           </Button>
         </Stack>
       </Box>
-      <Dialog
-        fullScreen
-        open={modalOpen}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-      >
-        <AppBar>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
-              <CloseIcon />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              {ingredientEdit ? "Edit " : "Add"} Ingredient
-            </Typography>
-            <Button
-              autoFocus
-              color="inherit"
-              onClick={() => {
-                if (ingredientEdit) {
-                  handleEditIngredient();
-                } else {
-                  handleSaveIngredient();
-                }
-              }}
-            >
-              {ingredientEdit ? "Update " : "Save"}
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Toolbar />
-        <Container maxWidth="xl" sx={{ marginY: 3 }}>
-          <Stack spacing={2}>
-            <Box>
-              <Typography variant="subtitle2" sx={{ letterSpacing: 0.6 }}>
-                Name
-              </Typography>
-              <TextField
-                InputProps={{
-                  style: {
-                    letterSpacing: 0.6,
-                  },
-                  placeholder: "Eg: Chilli Powder",
-                }}
-                fullWidth
-                variant="outlined"
-                name="title"
-                value={ingredient.title}
-                onChange={handleIngredientChanges}
-              />
-            </Box>
-            {ingredient && (
-              <img
-                src={ingredient.imgSrc}
-                alt={ingredient.name}
-                loading="lazy"
-              />
-            )}
-            <Button
-              component="label"
-              sx={{
-                border: "2px solid rgba(0, 0, 0, 0.1)",
-                height: "50vh",
-                borderRadius: "1",
-                textTransform: "none",
-                borderStyle: "dashed",
-                "&:hover": {
-                  backgroundColor: "transparent",
-                  borderStyle: "dashed",
-                  outline: "none",
-                },
-              }}
-            >
-              <Stack direction="row" spacing={1}>
-                <PhotoCamera sx={{ color: "rgba(0, 0, 0, 0.2)" }} />
-                <Typography
-                  variant="body1"
-                  gutterBottom
-                  sx={{ color: "rgba(0, 0, 0, 0.3)" }}
-                >
-                  Upload Image
-                </Typography>
-                <input
-                  hidden
-                  accept="image/*"
-                  type="file"
-                  name="imgSrc"
-                  capture
-                  onChange={handleIngredientChanges}
-                />
-              </Stack>
-            </Button>
-          </Stack>
-        </Container>
-      </Dialog>
       <ErrorAlert
         snackopen={snackopen}
         handleClose={handleCloseSnackbar}

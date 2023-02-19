@@ -18,13 +18,22 @@ import ShareIcon from "@mui/icons-material/Share";
 import { red } from "@mui/material/colors";
 import GradientBLACK from "../../Assets/20210113_083213.png";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { useDispatch } from "react-redux";
+import { setSelectedRecipe } from "../../redux/slices/recipeSlice";
+import { useNavigate } from "react-router-dom";
 
 const RecipeCard = (props) => {
   let { title, name, finish } = props.recipe;
   const [liked, setLiked] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   return (
     <Card
+      onClick={() => {
+        dispatch(setSelectedRecipe(props.recipe));
+        navigate("/edit");
+      }}
       sx={{
         position: "relative",
         boxShadow:
@@ -34,6 +43,7 @@ const RecipeCard = (props) => {
       <Box sx={{ height: 300 }}>
         <img
           src={
+            finish.imgSrc ||
             "https://www.foodandwine.com/thmb/dMG6keGBcEF7XF8LZdR2y5dPrxc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/jamaican-jerk-chicken-FT-RECIPE0918-eabbd55da31f4fa9b74367ef47464351.jpg"
           }
           alt={"Recipe Image"}
@@ -54,10 +64,14 @@ const RecipeCard = (props) => {
           bottom: 0,
         }}
       >
-        <Typography variant="h6" color="white">
+        <Typography variant="h4" color="white" sx={{ textTransform: "capitalize" }}>
           {title}
         </Typography>
-        <Typography variant="subtitle2" color="white" sx={{textTransform: 'capitalize'}}>
+        <Typography
+          variant="subtitle2"
+          color="white"
+          sx={{ textTransform: "capitalize" }}
+        >
           {` by ${name}`}
         </Typography>
       </CardContent>
@@ -83,13 +97,9 @@ const RecipeCard = (props) => {
         onClick={() => setLiked(!liked)}
       >
         {liked ? (
-          <FavoriteIcon
-            sx={{ fontSize: "1.5rem", color: "white" }}
-          />
+          <FavoriteIcon sx={{ fontSize: "1.5rem", color: "white" }} />
         ) : (
-          <FavoriteBorderIcon
-            sx={{ fontSize: "1.5rem", color: "white" }}
-          />
+          <FavoriteBorderIcon sx={{ fontSize: "1.5rem", color: "white" }} />
         )}
       </IconButton>
       <img

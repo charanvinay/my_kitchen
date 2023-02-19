@@ -1,20 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getUniqueId } from "../../Common/Constants";
 
-const initialState = {
+export const initialState = {
   id: "",
   title: "",
   type: "",
-  ingredients: [],
+  ingredients: [
+    {
+      id: getUniqueId(),
+      errors: [],
+      units: "",
+      value: "",
+    },
+  ],
   steps: [
     {
       id: getUniqueId(),
       errors: [],
-      imgSrc: "",
-      value: null,
+      value: "",
     },
   ],
-  finish: { errors: [], imgSrc: "", value: null },
+  finish: { errors: [], imgSrc: "", value: "" },
   createdAt: "",
 };
 export const recipeSlice = createSlice({
@@ -30,22 +36,10 @@ export const recipeSlice = createSlice({
       state[name].push(value);
     },
     editItem: (state, action) => {
-      let { name, value } = action.payload;
+      let { id, name, value, type } = action.payload;
       state[name].map((item, ind) => {
-        if (item.id === value.id) {
-          state[name][ind] = value;
-        }
-      });
-    },
-    editStep: (state, action) => {
-      let { id, val, type } = action.payload;
-      state.steps.map((item, ind) => {
         if (item.id === id) {
-          if (type == "image") {
-            state.steps[ind]["imgSrc"] = val;
-          } else {
-            state.steps[ind]["value"] = val;
-          }
+          state[name][ind][type] = value;
         }
       });
     },
@@ -57,15 +51,10 @@ export const recipeSlice = createSlice({
         state.finish["value"] = val;
       }
     },
-    handleStepValidation: (state, action) => {
-      state.steps.map((item, ind) => {
-        state.steps[ind]["errors"] = [];
-        if (!Boolean(item.value)) {
-          state.steps[ind]["errors"].push({
-            message: "* Please fill this step",
-          });
-        }
-      });
+    deleteItem: (state, action) => {
+      let { name, id } = action.payload;
+      let filteredItems = state[name].filter((item) => item.id !== id);
+      state[name] = filteredItems;
     },
     handleFinishValidation: (state, action) => {
       state.finish["errors"] = [];
@@ -80,6 +69,9 @@ export const recipeSlice = createSlice({
         });
       }
     },
+    setSelectedRecipe: (state, action)=>{
+      return {...action.payload};
+    }
   },
 });
 
@@ -87,10 +79,10 @@ export const getRecipe = (state) => state.recipeReducer;
 export const {
   addItem,
   editItem,
-  editStep,
   editFinish,
+  deleteItem,
+  setSelectedRecipe,
   handlePrimitiveState,
-  handleStepValidation,
   handleFinishValidation,
 } = recipeSlice.actions;
 export default recipeSlice.reducer;
