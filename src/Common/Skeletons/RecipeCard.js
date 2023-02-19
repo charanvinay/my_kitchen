@@ -10,7 +10,7 @@ const RecipeCardSkeleton = () => {
           <Skeleton variant="text" width={200} sx={{ width:"100%", fontSize: "1.2rem", marginBottom: "2px" }} />
           <Skeleton variant="text" width={100} sx={{ fontSize: "0.6rem" }} />
         </Stack>
-        <Skeleton variant="circular" width={40} height={40} />
+        {/* <Skeleton variant="circular" width={40} height={40} /> */}
       </Stack>
     </Stack>
   );

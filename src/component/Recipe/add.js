@@ -9,8 +9,8 @@ import { useEffect } from "react";
 import PrimaryDetails from "./primary_details";
 import RecipeSteps from "./steps";
 import Finish from "./finish";
-import { useSelector } from "react-redux";
-import { getActiveStep } from "../../redux/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { getActiveStep, getIsMobile, setIsMobile } from "../../redux/slices/userSlice";
 
 const steps = [
   {
@@ -25,12 +25,13 @@ const steps = [
 ];
 
 export default function AddRecipe() {
-  const [isMobile, setIsMobile] = useState(true);
+  const isMobile = useSelector(getIsMobile);
   const activeStep = useSelector(getActiveStep);
+  const dispatch = useDispatch();
 
   // create an event listener
   useEffect(() => {
-    setIsMobile(window.innerWidth < 800);
+    dispatch(setIsMobile(window.innerWidth < 800));
   }, []);
 
   const cmp_PrimaryDetails = () => <PrimaryDetails />;

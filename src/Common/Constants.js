@@ -128,4 +128,10 @@ export const theme = createTheme({
   },
 });
 
+export const bottomButtonsStyle = {
+  display: "flex",
+  justifyContent: "end",
+  alignItems: "end",
+};
+
 

@@ -5,6 +5,7 @@ export const initialState = {
   id: "",
   title: "",
   type: "",
+  serves: "",
   ingredients: [
     {
       id: getUniqueId(),
@@ -45,7 +46,7 @@ export const recipeSlice = createSlice({
     },
     editFinish: (state, action) => {
       let { val, type } = action.payload;
-      if (type == "image") {
+      if (type === "image") {
         state.finish["imgSrc"] = val;
       } else {
         state.finish["value"] = val;

@@ -30,7 +30,12 @@ import {
   getRecipe,
   handleFinishValidation,
 } from "../../redux/slices/recipeSlice";
-import { getLoggedUser, handleBack, handleReset } from "../../redux/slices/userSlice";
+import {
+  getIsMobile,
+  getLoggedUser,
+  handleBack,
+  handleReset,
+} from "../../redux/slices/userSlice";
 import {
   ref,
   getDownloadURL,
@@ -39,6 +44,7 @@ import {
   deleteObject,
 } from "firebase/storage";
 import ErrorAlert from "../../Common/ErrorAlert";
+import { bottomButtonsStyle } from "../../Common/Constants";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
@@ -57,6 +63,7 @@ const Finish = (props) => {
   const location = useLocation();
 
   const recipe = useSelector(getRecipe);
+  const isMobile = useSelector(getIsMobile);
   const loggedUser = useSelector(getLoggedUser);
 
   const handleClose = () => setModalOpen(false);
@@ -166,14 +173,14 @@ const Finish = (props) => {
       console.log(recipe_obj);
       await addDoc(collection(db, "recipes"), recipe_obj);
       navigate("/home");
-      dispatch(handleReset())
+      dispatch(handleReset());
     } catch (error) {
       console.log(error);
     }
     handleClose();
   };
   const handleUpdate = async () => {
-    const taskDocRef = doc(db, 'recipes', recipe._id)
+    const taskDocRef = doc(db, "recipes", recipe._id);
     console.log(taskDocRef);
     try {
       let recipe_obj = {
@@ -185,7 +192,7 @@ const Finish = (props) => {
       };
       await updateDoc(taskDocRef, recipe_obj);
       navigate("/home");
-      dispatch(handleReset())
+      dispatch(handleReset());
     } catch (error) {
       console.log(error);
     }
@@ -286,18 +293,28 @@ const Finish = (props) => {
             )}
           </Box>
           <Box
-            sx={{
-              margin: "20px 0px 10px 0px",
-              display: "flex",
-              justifyContent: "end",
-              alignItems: "end",
-            }}
+            sx={
+              !isMobile
+                ? {
+                    margin: "20px 0px 10px 0px",
+                    ...bottomButtonsStyle,
+                  }
+                : { margin: "20px 0px 10px 0px" }
+            }
           >
             <Stack direction="row" spacing={2}>
-              <Button variant="outlined" onClick={goToPreviousPage}>
+              <Button
+                fullWidth={isMobile}
+                variant="outlined"
+                onClick={goToPreviousPage}
+              >
                 Previous
               </Button>
-              <Button variant="contained" onClick={handleSubmit}>
+              <Button
+                fullWidth={isMobile}
+                variant="contained"
+                onClick={handleSubmit}
+              >
                 Preview
               </Button>
             </Stack>
@@ -334,11 +351,15 @@ const Finish = (props) => {
             >
               Preview
             </Typography>
-            {location.pathname==="add" ? <Button variant="outlined" color="inherit" onClick={handleSave}>
-              Save
-            </Button> : <Button variant="outlined" color="inherit" onClick={handleUpdate}>
-              Update
-            </Button>}
+            {location.pathname === "add" ? (
+              <Button variant="outlined" color="inherit" onClick={handleSave}>
+                Save
+              </Button>
+            ) : (
+              <Button variant="outlined" color="inherit" onClick={handleUpdate}>
+                Update
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
         <Toolbar />

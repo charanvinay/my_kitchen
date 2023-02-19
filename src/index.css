@@ -2,6 +2,14 @@
     font-family: "Product Sans Regular";
     src: url(./fonts/Product-Sans-Regular.ttf);
 }
+@font-face {
+    font-family: "Product Sans Bold";
+    src: url(./fonts/Product-Sans-Bold.ttf);
+}
+@font-face {
+    font-family: "Product Sans Bold Italic";
+    src: url(./fonts/Product-Sans-Bold-Italic.ttf);
+}
 
 .ck.ck-content.ck-read-only {
   background-color: #f5f5f5 !important;
@@ -41,3 +49,12 @@
 .ck-editor__editable_inline {
   padding: 0 15px !important;
 }
+
+table, th, td {  
+  border: 1px solid black;  
+  border-collapse: collapse;  
+  text-align: left;
+} 
+th, td {  
+  padding: 5px 10px;  
+}  

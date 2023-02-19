@@ -1,13 +1,23 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
-import ErrorAlert from "../../Common/ErrorAlert";
-import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
-import { getUniqueId } from "../../Common/Constants";
-import { handleBack, handleNext } from "../../redux/slices/userSlice";
+import ErrorAlert from "../../Common/ErrorAlert";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { bottomButtonsStyle, getUniqueId } from "../../Common/Constants";
+import CKeditor from "../../Common/Skeletons/CKeditor";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem, editItem, getRecipe } from "../../redux/slices/recipeSlice";
-import { Box, Button, Stack, Typography } from "@mui/material";
-
+import {
+  getIsMobile,
+  handleBack,
+  handleNext,
+} from "../../redux/slices/userSlice";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { Box, Button, Divider, Stack, Typography } from "@mui/material";
+import {
+  addItem,
+  deleteItem,
+  editItem,
+  getRecipe,
+} from "../../redux/slices/recipeSlice";
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
 const RecipeSteps = (props) => {
@@ -16,6 +26,7 @@ const RecipeSteps = (props) => {
   const [displayEditors, setDisplayEditors] = useState(false);
 
   const recipe = useSelector(getRecipe);
+  const isMobile = useSelector(getIsMobile);
   console.log(recipe);
 
   const dispatch = useDispatch();
@@ -81,12 +92,30 @@ const RecipeSteps = (props) => {
           {recipe.steps?.map((step, skey) => {
             return (
               <Box key={step.id}>
-                <Typography
-                  variant="subtitle2"
-                  sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
-                >
-                  {`Step ${skey + 1}`}
-                </Typography>
+                {skey == 0 ? (
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ margin: "10px 0px", letterSpacing: 0.6 }}
+                  >
+                    {`Step ${skey + 1}`}
+                  </Typography>
+                ) : (
+                  <Box sx={{ marginY: "25px", position: "relative" }}>
+                    <Divider textAlign="left">Step {skey + 1}</Divider>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      size="small"
+                      sx={{ position: "absolute", right: 0, top: -5 }}
+                      startIcon={<DeleteIcon />}
+                      onClick={() =>
+                        dispatch(deleteItem({ name: "steps", id: step.id }))
+                      }
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+                )}
                 <Suspense fallback={<CKeditor />}>
                   <div className="ckeditor" style={{ position: "relative" }}>
                     <CKeditorRender
@@ -102,23 +131,39 @@ const RecipeSteps = (props) => {
             );
           })}
           <Box sx={{ margin: "20px 0px 10px 0px" }}>
-            <Button fullWidth={true} onClick={handleAdd}>
-              + Add Step
+            <Button
+              fullWidth={true}
+              onClick={handleAdd}
+              color="success"
+              sx={{ lineHeight: 0 }}
+              startIcon={<AddCircleOutlineIcon />}
+            >
+              Add Step
             </Button>
           </Box>
           <Box
-            sx={{
-              margin: "20px 0px 10px 0px",
-              display: "flex",
-              justifyContent: "end",
-              alignItems: "end",
-            }}
+            sx={
+              !isMobile
+                ? {
+                    margin: "20px 0px 10px 0px",
+                    ...bottomButtonsStyle,
+                  }
+                : { margin: "20px 0px 10px 0px" }
+            }
           >
             <Stack direction="row" spacing={2}>
-              <Button variant="outlined" onClick={goToPreviousPage}>
+              <Button
+                fullWidth={isMobile}
+                variant="outlined"
+                onClick={goToPreviousPage}
+              >
                 Previous
               </Button>
-              <Button variant="contained" onClick={handleSubmit}>
+              <Button
+                fullWidth={window.innerWidth < 800}
+                variant="contained"
+                onClick={handleSubmit}
+              >
                 Next
               </Button>
             </Stack>

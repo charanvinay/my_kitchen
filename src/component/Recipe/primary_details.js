@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import ErrorAlert from "../../Common/ErrorAlert";
-import { getUniqueId } from "../../Common/Constants";
+import { bottomButtonsStyle, getUniqueId } from "../../Common/Constants";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -24,8 +24,10 @@ import {
   setSelectedRecipe,
 } from "../../redux/slices/recipeSlice";
 import moment from "moment";
-import { handleNext } from "../../redux/slices/userSlice";
 import HeadingMD from "../../Common/HeadingMD";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { getIsMobile, handleNext } from "../../redux/slices/userSlice";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const PrimaryDetails = (props) => {
   const [errorText, setErrorText] = useState(false);
@@ -33,6 +35,7 @@ const PrimaryDetails = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const recipe = useSelector(getRecipe);
+  const isMobile = useSelector(getIsMobile);
   console.log(recipe);
 
   const handleCloseSnackbar = (event, reason) => {
@@ -82,7 +85,10 @@ const PrimaryDetails = (props) => {
       errors.title = "Please enter the title of your recipe";
     }
     if (!values.type) {
-      errors.type = "Please enter the type of your recipe";
+      errors.type = "Please select the type of your recipe";
+    }
+    if (!values.serves) {
+      errors.serves = "Please select the serves of your recipe";
     }
     if (values.ingredients.length < 1) {
       errors.description = "Add minimum one ingredient";
@@ -105,7 +111,7 @@ const PrimaryDetails = (props) => {
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
       <Grid container spacing={1}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <HeadingMD text={"Title"} />
           <TextField
             InputProps={{
@@ -121,7 +127,7 @@ const PrimaryDetails = (props) => {
             onChange={handleChanges}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <HeadingMD text={"Type"} />
           <Select
             value={recipe.type || ""}
@@ -144,6 +150,26 @@ const PrimaryDetails = (props) => {
             <MenuItem value={"Beverage"}>Beverage</MenuItem>
           </Select>
         </Grid>
+        <Grid item xs={12} md={4}>
+          <HeadingMD text={"Serves"} />
+          <Select
+            value={recipe.serves || ""}
+            displayEmpty
+            name="serves"
+            sx={{ width: "100%" }}
+            renderValue={(selected) => {
+              if (!Boolean(selected)) {
+                return <p style={{ color: "rgb(191 191 191)" }}>Eg: 4</p>;
+              }
+              return selected;
+            }}
+            onChange={handleChanges}
+          >
+            {["1", "2", "3", "4", "5", "6", "7", "8"].map((num) => (
+              <MenuItem value={num}>{num}</MenuItem>
+            ))}
+          </Select>
+        </Grid>
       </Grid>
       <Box sx={{ height: "10px" }}></Box>
       <HeadingMD text={"Ingredients"} />
@@ -160,6 +186,7 @@ const PrimaryDetails = (props) => {
                       color="error"
                       size="small"
                       sx={{ position: "absolute", right: 0, top: -5 }}
+                      startIcon={<DeleteIcon />}
                       onClick={() =>
                         dispatch(
                           deleteItem({ name: "ingredients", id: ingredient.id })
@@ -233,20 +260,29 @@ const PrimaryDetails = (props) => {
           })}
       </Grid>
       <Box sx={{ margin: "20px 0px 10px 0px" }}>
-        <Button fullWidth={true} onClick={handleAdd} color="success">
-          + Add Ingredient
+        <Button
+          fullWidth={true}
+          onClick={handleAdd}
+          color="success"
+          sx={{ lineHeight: 0 }}
+          startIcon={<AddCircleOutlineIcon />}
+        >
+          Add Ingredient
         </Button>
       </Box>
       <Box
-        sx={{
-          margin: "20px 0px 10px 0px",
-          display: "flex",
-          justifyContent: "end",
-          alignItems: "end",
-        }}
+        sx={
+          !isMobile
+            ? {
+                margin: "20px 0px 10px 0px",
+                ...bottomButtonsStyle,
+              }
+            : { margin: "20px 0px 10px 0px" }
+        }
       >
         <Stack direction="row" spacing={2}>
           <Button
+            fullWidth={isMobile}
             variant="outlined"
             onClick={() => {
               navigate("/home");
@@ -255,7 +291,11 @@ const PrimaryDetails = (props) => {
           >
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleSubmit}>
+          <Button
+            fullWidth={isMobile}
+            variant="contained"
+            onClick={handleSubmit}
+          >
             Next
           </Button>
         </Stack>

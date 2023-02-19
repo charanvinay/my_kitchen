@@ -9,7 +9,7 @@ function HeadingMD(props) {
       // gutterBottom
       variant="h1"
       sx={{
-        fontSize: "25px",
+        fontSize: "20px",
         textTransform: "capitalize",
         color: props.color || "text.primary",
         letterSpacing: 1,

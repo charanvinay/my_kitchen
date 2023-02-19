@@ -14,20 +14,32 @@ const CompleteRecipe = () => {
     <Container maxWidth="xl" sx={{ marginTop: 2, marginBottom: 5 }}>
       <Box sx={{ textAlign: "center" }}>
         <HeadingLG text={recipe.title} />
+        <Subtitle1 text={recipe.type + " | Serves - " + recipe.serves} />
       </Box>
       <Box sx={{ margin: "20px 0 10px 0" }}>
         <HeadingMD text={"INGREDIENTS"} />
       </Box>
       <Stack spacing={1} sx={{ margin: "5px 10px" }}>
-        <ul>
+        <table>
+          <tr>
+            <th style={{width:"50px"}}>S.No</th>
+            <th>Name</th>
+            <th>Units</th>
+          </tr>
           {recipe.ingredients.map((step, skey) => {
             return (
-              <li key={step.id} style={{ marginLeft: "12px" }}>
-                <Subtitle1 text={step.value + " - " + step.units} />
-              </li>
+              <tr key={step.id}>
+                <td>{skey + 1}</td>
+                <td>
+                  <Subtitle1 text={step.value} />
+                </td>
+                <td>
+                  <Subtitle1 text={step.units} />
+                </td>
+              </tr>
             );
           })}
-        </ul>
+        </table>
       </Stack>
       <Box sx={{ margin: "25px 0px 15px 0px" }}>
         <HeadingMD text={"STEPS"} />
