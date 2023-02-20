@@ -6,6 +6,7 @@ import "./App.css";
 import Home from "./component/home";
 import Login from "./component/login";
 import Navbar from "./component/navbar";
+import Profile from "./component/Profile/profile";
 import AddRecipe from "./component/Recipe/add";
 import { store } from "./redux/store";
 
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/add" element={<AddRecipe />} />
         <Route path="/edit" element={<AddRecipe />} />
       </Routes>

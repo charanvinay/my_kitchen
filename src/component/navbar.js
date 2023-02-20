@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getLoggedUser, handleLoggedUser } from "../redux/slices/userSlice";
 
 const pages = [{ id: 1, tooltip: "Explore", route: "/explore" }];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Profile", "Logout"];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -61,7 +61,10 @@ function Navbar() {
   };
 
   const handleCloseUserMenu = (setting) => {
-    if (setting === "Logout") {
+    if (setting === "Profile") {
+      navigate("/profile")
+    }
+    else if (setting === "Logout") {
       logOut();
       localStorage.removeItem('loggedUser');
     }
