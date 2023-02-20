@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { getLoggedUser } from "../../redux/slices/userSlice";
 // import TopCover from "../../Assets/coverblack.jpg";
 import TopCover from "../../Assets/coverslate.jpg";
+import { primary } from "../../Common/Pallete";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Profile = () => {
 
   return (
     <Box sx={{ position: "relative" }}>
-      <Box sx={{ width: "100%", height: 150 }}>
+      <Box sx={{ width: "100%", height: 150, backgroundColor: primary }}>
         <img
           src={TopCover}
           alt="Cover Photo"
@@ -38,7 +39,6 @@ const Profile = () => {
       </Box>
       <Stack sx={{textAlign:"center",margin:"15px 0px 0px 0px"}} spacing={1} >
         <Typography variant="h4" sx={{textTransform: "capitalize"}}>{loggedUser.name}</Typography>
-        <Typography variant="body1" sx={{textTransform: "capitalize"}}>Total Recipes - 2</Typography>
       </Stack>
       <UserRecipes />
       <Fab
