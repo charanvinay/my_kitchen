@@ -9,9 +9,9 @@ function Subtitle1(props) {
       variant="subtitle1"
       color="text.primary"
       className="custom-subtitle1"
-      sx={{ fontSize: "14px", [bpSMd]: { fontSize: "14px", lineHeight: 1.4 } }}
+      sx={{ fontSize: "14px", [bpSMd]: { fontSize: "14px" } }}
     >
-      <div dangerouslySetInnerHTML={{__html: props.text}}/>
+      <div dangerouslySetInnerHTML={{ __html: props.text }} />
     </Typography>
   );
 }

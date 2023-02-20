@@ -1,10 +1,9 @@
-import { Box, Container, Grid, Stack } from "@mui/material";
+import { Box, Container, Stack } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
 import HeadingLG from "../../Common/HeadingLG";
 import HeadingMD from "../../Common/HeadingMD";
 import ImgWithBorder from "../../Common/ImgWithBorder";
-import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import Subtitle1 from "../../Common/Subtitle1";
 import { getRecipe } from "../../redux/slices/recipeSlice";
 
@@ -17,32 +16,36 @@ const CompleteRecipe = () => {
         <Subtitle1 text={recipe.type + " | Serves - " + recipe.serves} />
       </Box>
       <Box sx={{ margin: "20px 0 10px 0" }}>
-        <HeadingMD text={"INGREDIENTS"} />
+        <HeadingMD text={"INGREDIENTS"} width={70} />
       </Box>
       <Stack spacing={1} sx={{ margin: "5px 10px" }}>
         <table>
-          <tr>
-            <th style={{width:"50px"}}>S.No</th>
-            <th>Name</th>
-            <th>Units</th>
-          </tr>
-          {recipe.ingredients.map((step, skey) => {
-            return (
-              <tr key={step.id}>
-                <td>{skey + 1}</td>
-                <td>
-                  <Subtitle1 text={step.value} />
-                </td>
-                <td>
-                  <Subtitle1 text={step.units} />
-                </td>
-              </tr>
-            );
-          })}
+          <thead>
+            <tr>
+              <th style={{ width: "50px" }}>S.No</th>
+              <th>Name</th>
+              <th>Units</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recipe.ingredients.map((step, skey) => {
+              return (
+                <tr key={step.id}>
+                  <td>{skey + 1}</td>
+                  <td>
+                    <Subtitle1 text={step.value} />
+                  </td>
+                  <td>
+                    <Subtitle1 text={step.units} />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </Stack>
       <Box sx={{ margin: "25px 0px 15px 0px" }}>
-        <HeadingMD text={"STEPS"} />
+        <HeadingMD text={"STEPS"} width={35} />
       </Box>
       <Stack spacing={1} sx={{ margin: "5px 10px" }}>
         <ol type="1">
@@ -56,7 +59,7 @@ const CompleteRecipe = () => {
         </ol>
       </Stack>
       <Box sx={{ margin: "20px 0 10px 0" }}>
-        <HeadingMD text={"FINAL STEP"} />
+        <HeadingMD text={"FINAL STEP"} width={50} />
       </Box>
       <Stack direction={"column"} spacing={2}>
         <Subtitle1 text={recipe.finish.value} />

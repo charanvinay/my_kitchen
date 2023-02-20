@@ -1,3 +1,7 @@
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import DeleteIcon from "@mui/icons-material/Delete";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import {
   Box,
   Button,
@@ -7,13 +11,15 @@ import {
   Select,
   Stack,
   TextField,
-  Typography,
+  Typography
 } from "@mui/material";
+import moment from "moment";
 import React, { useState } from "react";
-import ErrorAlert from "../../Common/ErrorAlert";
-import { bottomButtonsStyle, getUniqueId } from "../../Common/Constants";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { bottomButtonsStyle, getUniqueId } from "../../Common/Constants";
+import ErrorAlert from "../../Common/ErrorAlert";
+import HeadingMD from "../../Common/HeadingMD";
 import {
   addItem,
   deleteItem,
@@ -21,13 +27,9 @@ import {
   getRecipe,
   handlePrimitiveState,
   initialState,
-  setSelectedRecipe,
+  setSelectedRecipe
 } from "../../redux/slices/recipeSlice";
-import moment from "moment";
-import HeadingMD from "../../Common/HeadingMD";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { getIsMobile, handleNext } from "../../redux/slices/userSlice";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const PrimaryDetails = (props) => {
   const [errorText, setErrorText] = useState(false);
@@ -112,7 +114,7 @@ const PrimaryDetails = (props) => {
     <Box component="main" sx={{ px: 1, py: 2 }}>
       <Grid container spacing={1}>
         <Grid item xs={12} md={4}>
-          <HeadingMD text={"Title"} />
+          <HeadingMD text={"Title"} width={20} />
           <TextField
             InputProps={{
               style: {
@@ -128,7 +130,7 @@ const PrimaryDetails = (props) => {
           />
         </Grid>
         <Grid item xs={12} md={4}>
-          <HeadingMD text={"Type"} />
+          <HeadingMD text={"Type"} width={20} />
           <Select
             value={recipe.type || ""}
             displayEmpty
@@ -151,7 +153,7 @@ const PrimaryDetails = (props) => {
           </Select>
         </Grid>
         <Grid item xs={12} md={4}>
-          <HeadingMD text={"Serves"} />
+          <HeadingMD text={"Serves"} width={20} />
           <Select
             value={recipe.serves || ""}
             displayEmpty
@@ -166,13 +168,15 @@ const PrimaryDetails = (props) => {
             onChange={handleChanges}
           >
             {["1", "2", "3", "4", "5", "6", "7", "8"].map((num) => (
-              <MenuItem value={num}>{num}</MenuItem>
+              <MenuItem value={num} key={num}>
+                {num}
+              </MenuItem>
             ))}
           </Select>
         </Grid>
       </Grid>
       <Box sx={{ height: "10px" }}></Box>
-      <HeadingMD text={"Ingredients"} />
+      <HeadingMD text={"Ingredients"} width={60} />
       <Grid container spacing={1}>
         {recipe.ingredients.length > 0 &&
           recipe.ingredients.map((ingredient, ikey) => {
@@ -284,6 +288,8 @@ const PrimaryDetails = (props) => {
           <Button
             fullWidth={isMobile}
             variant="outlined"
+            startIcon={<HighlightOffIcon />}
+            sx={{ lineHeight: 0 }}
             onClick={() => {
               navigate("/home");
               dispatch(setSelectedRecipe(initialState));
@@ -294,6 +300,7 @@ const PrimaryDetails = (props) => {
           <Button
             fullWidth={isMobile}
             variant="contained"
+            endIcon={<ArrowForwardIcon />}
             onClick={handleSubmit}
           >
             Next

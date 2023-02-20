@@ -1,23 +1,25 @@
-import React, { lazy, Suspense, useEffect, useState } from "react";
-import Step from "../../Common/Skeletons/Step";
-import ErrorAlert from "../../Common/ErrorAlert";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { bottomButtonsStyle, getUniqueId } from "../../Common/Constants";
-import CKeditor from "../../Common/Skeletons/CKeditor";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getIsMobile,
-  handleBack,
-  handleNext,
-} from "../../redux/slices/userSlice";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
+import React, { lazy, Suspense, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { bottomButtonsStyle, getUniqueId } from "../../Common/Constants";
+import ErrorAlert from "../../Common/ErrorAlert";
+import CKeditor from "../../Common/Skeletons/CKeditor";
+import Step from "../../Common/Skeletons/Step";
 import {
   addItem,
   deleteItem,
   editItem,
-  getRecipe,
+  getRecipe
 } from "../../redux/slices/recipeSlice";
+import {
+  getIsMobile,
+  handleBack,
+  handleNext
+} from "../../redux/slices/userSlice";
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
 const RecipeSteps = (props) => {
@@ -155,13 +157,16 @@ const RecipeSteps = (props) => {
               <Button
                 fullWidth={isMobile}
                 variant="outlined"
+                startIcon={<ArrowBackIcon />}
                 onClick={goToPreviousPage}
               >
                 Previous
               </Button>
               <Button
-                fullWidth={window.innerWidth < 800}
+                fullWidth={isMobile}
                 variant="contained"
+                sx={{ lineHeight: 0 }}
+                endIcon={<ArrowForwardIcon />}
                 onClick={handleSubmit}
               >
                 Next

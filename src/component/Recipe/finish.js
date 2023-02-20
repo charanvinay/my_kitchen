@@ -1,3 +1,10 @@
+import { Visibility } from "@mui/icons-material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import CloseIcon from "@mui/icons-material/Close";
+import ImageIcon from "@mui/icons-material/Image";
+import LoopIcon from '@mui/icons-material/Loop';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   AppBar,
   Box,
@@ -10,41 +17,34 @@ import {
   Slide,
   Stack,
   Toolbar,
-  Typography,
+  Typography
 } from "@mui/material";
+import { grey } from "@mui/material/colors";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes
+} from "firebase/storage";
 import React, { lazy, Suspense, useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { bottomButtonsStyle } from "../../Common/Constants";
+import ErrorAlert from "../../Common/ErrorAlert";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
-import CompleteRecipe from "./complete_recipe";
-import { useLocation, useNavigate } from "react-router-dom";
-import { db, storage } from "../../services/firebase";
-import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import ImageIcon from "@mui/icons-material/Image";
-import { grey } from "@mui/material/colors";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  editFinish,
-  getRecipe,
-  handleFinishValidation,
-} from "../../redux/slices/recipeSlice";
+import { editFinish, getRecipe } from "../../redux/slices/recipeSlice";
 import {
   getIsMobile,
   getLoggedUser,
   handleBack,
-  handleReset,
+  handleReset
 } from "../../redux/slices/userSlice";
-import {
-  ref,
-  getDownloadURL,
-  uploadBytes,
-  getStorage,
-  deleteObject,
-} from "firebase/storage";
-import ErrorAlert from "../../Common/ErrorAlert";
-import { bottomButtonsStyle } from "../../Common/Constants";
+import { db, storage } from "../../services/firebase";
+import CompleteRecipe from "./complete_recipe";
 
 const CKeditorRender = lazy(() => import("../../Common/CKEditorComp.js"));
 
@@ -306,6 +306,7 @@ const Finish = (props) => {
               <Button
                 fullWidth={isMobile}
                 variant="outlined"
+                startIcon={<ArrowBackIcon />}
                 onClick={goToPreviousPage}
               >
                 Previous
@@ -313,6 +314,7 @@ const Finish = (props) => {
               <Button
                 fullWidth={isMobile}
                 variant="contained"
+                endIcon={<Visibility/>}
                 onClick={handleSubmit}
               >
                 Preview
@@ -352,11 +354,11 @@ const Finish = (props) => {
               Preview
             </Typography>
             {location.pathname === "add" ? (
-              <Button variant="outlined" color="inherit" onClick={handleSave}>
+              <Button variant="outlined" color="inherit" onClick={handleSave} endIcon={<SaveIcon/>}>
                 Save
               </Button>
             ) : (
-              <Button variant="outlined" color="inherit" onClick={handleUpdate}>
+              <Button variant="outlined" color="inherit" onClick={handleUpdate} endIcon={<LoopIcon/>}>
                 Update
               </Button>
             )}
