@@ -83,6 +83,7 @@ const UserRecipes = () => {
                   <RecipeCard
                     key={recipe._id}
                     recipe={recipe}
+                    navTo={"/edit"}
                     handleDelete={() => handleDelete(recipe._id)}
                   />
                 </Grid>

@@ -7,6 +7,7 @@ import Home from "./component/home";
 import Login from "./component/login";
 import Navbar from "./component/navbar";
 import Profile from "./component/Profile/profile";
+import RecipeDetails from "./component/Profile/recipe_details";
 import AddRecipe from "./component/Recipe/add";
 import { store } from "./redux/store";
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/add" element={<AddRecipe />} />
         <Route path="/edit" element={<AddRecipe />} />
+        <Route path="/view" element={<RecipeDetails />} />
       </Routes>
     </Provider>
   );

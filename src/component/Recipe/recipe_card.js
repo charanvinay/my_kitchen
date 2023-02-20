@@ -1,22 +1,17 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  Stack,
-  Typography,
-} from "@mui/material";
-import React, { useState } from "react";
-import IconButton from "@mui/material/IconButton";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import GradientBLACK from "../../Assets/20210113_083213.png";
-import LocalDiningIcon from "@mui/icons-material/LocalDining";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { RiLeafLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import GradientBLACK from "../../Assets/20210113_083213.png";
+import Serves from "../../Common/Ribbons/Serves";
+import Veg from "../../Common/Ribbons/Veg";
 import { setSelectedRecipe } from "../../redux/slices/recipeSlice";
 
 const RecipeCard = (props) => {
+  let { navTo } = props;
   let { title, name, finish, type, serves } = props.recipe;
   const [liked, setLiked] = useState(false);
   const dispatch = useDispatch();
@@ -34,7 +29,7 @@ const RecipeCard = (props) => {
         }}
         onClick={() => {
           dispatch(setSelectedRecipe(props.recipe));
-          navigate("/edit");
+          navigate(navTo);
         }}
       >
         <Box sx={{ height: 300 }}>
@@ -124,38 +119,8 @@ const RecipeCard = (props) => {
         direction="row"
         spacing={1}
       >
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
-          spacing={0.5}
-          sx={{
-            color: "white",
-            padding: "6px 8px",
-            borderRadius: "10px",
-            backgroundColor: "#5AFF15",
-            backgroundImage: "linear-gradient(133deg, #5AFF15 0%, #00B712 74%)",
-          }}
-        >
-          <RiLeafLine color="white" style={{ fontSize: "1.5em" }} />
-          <Typography variant="body2">{type}</Typography>
-        </Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
-          spacing={0.5}
-          sx={{
-            color: "white",
-            padding: "6px 8px",
-            borderRadius: "10px",
-            backgroundColor: "#485461",
-            backgroundImage: "linear-gradient(133deg, #485461 0%, #28313B 74%)",
-          }}
-        >
-          <LocalDiningIcon color="white" />
-          <Typography variant="body2">Serves - {serves}</Typography>
-        </Stack>
+        <Veg />
+        <Serves serves={serves} />
       </Stack>
     </Box>
   );

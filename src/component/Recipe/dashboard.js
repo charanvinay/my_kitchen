@@ -76,6 +76,7 @@ const Dashboard = () => {
                 <RecipeCard
                   key={recipe._id}
                   recipe={recipe}
+                  navTo={"/view"}
                   handleDelete={() => handleDelete(recipe._id)}
                 />
               </Grid>
