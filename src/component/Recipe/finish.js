@@ -258,9 +258,9 @@ const Finish = (props) => {
                     <input
                       accept="image/*"
                       type="file"
-                      capture="user"
                       id="uploadPhotoInput"
                       name="uploadPhotoInput"
+                      capture="camera"
                       onChange={(e) => {
                         handleChanges(e.target.files[0], "image");
                       }}
