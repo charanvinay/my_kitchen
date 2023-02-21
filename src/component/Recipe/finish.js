@@ -198,6 +198,11 @@ const Finish = (props) => {
     }
     handleClose();
   };
+
+  const handleClick = event => {
+    const { target = {} } = event || {};
+    target.value = "";
+  };
   return (
     <Box component="main" sx={{ px: 1, py: 2 }}>
       {displayEditors ? (
@@ -268,6 +273,7 @@ const Finish = (props) => {
                         alert(e.target.files[0].name)
                         // handleChanges(e.target.files[0], "image");
                       }}
+                      onClick={handleClick} 
                     />
                   </Button>
                 </Box>
