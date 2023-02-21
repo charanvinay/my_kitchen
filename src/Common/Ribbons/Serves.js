@@ -19,7 +19,7 @@ const Serves = (props) => {
         backgroundImage: "linear-gradient(133deg, #485461 0%, #28313B 74%)",
       }}
     >
-      <LocalDiningIcon color="white" sx={{[bpSMd]: { fontSize: "1em" }}}/>
+      <LocalDiningIcon color="white" sx={{fontSize: "1em", [bpSMd]: { fontSize: "1em" }}}/>
       <Typography variant="body2" sx={{[bpSMd]: { fontSize: "0.8em" }}}>Serves - {props.serves}</Typography>
     </Stack>
   );

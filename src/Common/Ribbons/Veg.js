@@ -2,6 +2,8 @@ import { Stack, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { RiLeafLine } from "react-icons/ri";
 
+const color1 = "#74D680";
+const color2 = "#378B29";
 const Veg = () => {
   const theme = useTheme();
   const bpSMd = theme.breakpoints.down("sm");
@@ -15,8 +17,8 @@ const Veg = () => {
         color: "white",
         padding: "6px 8px",
         borderRadius: "10px",
-        backgroundColor: "#5AFF15",
-        backgroundImage: "linear-gradient(133deg, #5AFF15 0%, #00B712 74%)",
+        backgroundColor: color1,
+        backgroundImage: `linear-gradient(133deg, ${color1} 0%, ${color2} 74%)`,
       }}
     >
       <RiLeafLine
