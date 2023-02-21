@@ -3,8 +3,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import ImageIcon from "@mui/icons-material/Image";
-import LoopIcon from '@mui/icons-material/Loop';
-import SaveIcon from '@mui/icons-material/Save';
+import LoopIcon from "@mui/icons-material/Loop";
+import SaveIcon from "@mui/icons-material/Save";
 import {
   AppBar,
   Box,
@@ -17,7 +17,7 @@ import {
   Slide,
   Stack,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
@@ -26,7 +26,7 @@ import {
   getDownloadURL,
   getStorage,
   ref,
-  uploadBytes
+  uploadBytes,
 } from "firebase/storage";
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,7 +41,7 @@ import {
   getIsMobile,
   getLoggedUser,
   handleBack,
-  handleReset
+  handleReset,
 } from "../../redux/slices/userSlice";
 import { db, storage } from "../../services/firebase";
 import CompleteRecipe from "./complete_recipe";
@@ -256,14 +256,14 @@ const Finish = (props) => {
                   >
                     <CameraAltIcon color="black" />
                     <input
-                      hidden
                       accept="image/*"
                       type="file"
                       capture="user"
-                      name="imgSrc"
-                      onChange={(e) =>
-                        handleChanges(e.target.files[0], "image")
-                      }
+                      id="uploadPhotoInput"
+                      name="uploadPhotoInput"
+                      onChange={(e) => {
+                        handleChanges(e.target.files[0], "image");
+                      }}
                     />
                   </Button>
                 </Box>
@@ -314,7 +314,7 @@ const Finish = (props) => {
               <Button
                 fullWidth={isMobile}
                 variant="contained"
-                endIcon={<Visibility/>}
+                endIcon={<Visibility />}
                 onClick={handleSubmit}
               >
                 Preview
@@ -354,11 +354,21 @@ const Finish = (props) => {
               Preview
             </Typography>
             {location.pathname === "add" ? (
-              <Button variant="outlined" color="inherit" onClick={handleSave} endIcon={<SaveIcon/>}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={handleSave}
+                endIcon={<SaveIcon />}
+              >
                 Save
               </Button>
             ) : (
-              <Button variant="outlined" color="inherit" onClick={handleUpdate} endIcon={<LoopIcon/>}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={handleUpdate}
+                endIcon={<LoopIcon />}
+              >
                 Update
               </Button>
             )}

@@ -33,14 +33,14 @@ function Navbar() {
       return;
     }
     if (!user) {
-      localStorage.removeItem('loggedUser');
+      localStorage.removeItem("loggedUser");
       return navigate("/");
     }
     fetchUserDetails();
   }, [user, loading]);
 
   const fetchUserDetails = () => {
-    let user_obj = JSON.parse(localStorage.getItem('loggedUser'));
+    let user_obj = JSON.parse(localStorage.getItem("loggedUser"));
     console.log(user_obj);
     if (user_obj) {
       dispatch(handleLoggedUser(user_obj));
@@ -62,11 +62,10 @@ function Navbar() {
 
   const handleCloseUserMenu = (setting) => {
     if (setting === "Profile") {
-      navigate("/profile")
-    }
-    else if (setting === "Logout") {
+      navigate("/profile");
+    } else if (setting === "Logout") {
       logOut();
-      localStorage.removeItem('loggedUser');
+      localStorage.removeItem("loggedUser");
     }
     setAnchorElUser(null);
   };
@@ -91,7 +90,6 @@ function Navbar() {
           >
             Let's Cook
           </Typography>
-
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -164,22 +162,10 @@ function Navbar() {
               </Tooltip>
             ))}
           </Box>
-
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                {loggedUser.photoURL && (
-                  <Avatar
-                    alt={"User Image"}
-                    src={loggedUser.photoURL}
-                  />
-                )}
-                {!loggedUser.photoURL && (
-                  <Avatar
-                    alt={"User Image"}
-                    src={"/static/images/avatar/2.jpg"}
-                  />
-                )}
+                <Avatar alt={"User Image"} src={loggedUser.photoURL} />
               </IconButton>
             </Tooltip>
             <Menu
