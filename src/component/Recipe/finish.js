@@ -256,13 +256,15 @@ const Finish = (props) => {
                   >
                     <CameraAltIcon color="black" />
                     <input
+                      hidden
                       accept="image/*"
                       type="file"
                       id="uploadPhotoInput"
                       name="uploadPhotoInput"
-                      capture="camera"
+                      capture="environment"
                       onChange={(e) => {
-                        handleChanges(e.target.files[0], "image");
+                        alert(e.target.files[0])
+                        // handleChanges(e.target.files[0], "image");
                       }}
                     />
                   </Button>
