@@ -33,6 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { bottomButtonsStyle } from "../../Common/Constants";
 import ErrorAlert from "../../Common/ErrorAlert";
+import ImgCapture from "../../Common/ImgCapture";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
@@ -321,6 +322,7 @@ const Finish = (props) => {
               </Button>
             </Stack>
           </Box>
+          <ImgCapture />
           <ErrorAlert
             snackopen={snackopen}
             handleClose={handleCloseSnackbar}
