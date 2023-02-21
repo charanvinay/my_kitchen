@@ -263,7 +263,8 @@ const Finish = (props) => {
                       name="uploadPhotoInput"
                       capture="environment"
                       onChange={(e) => {
-                        alert(e.target.files[0])
+                        e.preventDefault();
+                        alert(e.target.files[0].name)
                         // handleChanges(e.target.files[0], "image");
                       }}
                     />
