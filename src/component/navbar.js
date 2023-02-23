@@ -76,65 +76,13 @@ function Navbar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontWeight: 700,
-              letterSpacing: ".1rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            Let's Cook
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page.tooltip} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page.tooltip}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <Typography
             variant="h5"
             noWrap
             component="a"
             href="/"
             sx={{
               mr: 2,
-              display: { xs: "flex", md: "none" },
+              display: { xs: "flex" },
               flexGrow: 1,
               fontWeight: 700,
               letterSpacing: ".1rem",
@@ -146,8 +94,7 @@ function Navbar() {
           </Typography>
           <Box
             sx={{
-              flexGrow: 1,
-              display: { xs: "none", md: "flex" },
+              display: { md: "flex" },
               justifyContent: "end",
               marginRight: "6px"
             }}
@@ -159,7 +106,6 @@ function Navbar() {
                   onClick={() => navigate(page.route)}
                   color="inherit"
                 >
-                  {page.id==1 && <HomeRoundedIcon alt={page.tooltip} />}
                   {page.id==2 && <FavoriteBorderIcon alt={page.tooltip} />}
                 </IconButton>
               </Tooltip>
