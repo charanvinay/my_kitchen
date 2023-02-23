@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
+import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import ExploreIcon from "@mui/icons-material/Explore";
-import { auth, logOut } from "../services/firebase";
-import { useNavigate } from "react-router-dom";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getLoggedUser, handleLoggedUser } from "../redux/slices/userSlice";
+import { auth, logOut } from "../services/firebase";
 
-const pages = [{ id: 1, tooltip: "Explore", route: "/explore" }];
+const pages = [{ id: 1, tooltip: "Home", route: "/home" }, { id: 2, tooltip: "Favourites", route: "/favourites" }];
 const settings = ["Profile", "Logout"];
 
 function Navbar() {
@@ -148,6 +149,7 @@ function Navbar() {
               flexGrow: 1,
               display: { xs: "none", md: "flex" },
               justifyContent: "end",
+              marginRight: "6px"
             }}
           >
             {pages.map((page) => (
@@ -157,7 +159,8 @@ function Navbar() {
                   onClick={() => navigate(page.route)}
                   color="inherit"
                 >
-                  <ExploreIcon alt={page.tooltip} />
+                  {page.id==1 && <HomeRoundedIcon alt={page.tooltip} />}
+                  {page.id==2 && <FavoriteBorderIcon alt={page.tooltip} />}
                 </IconButton>
               </Tooltip>
             ))}

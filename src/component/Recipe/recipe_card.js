@@ -10,14 +10,16 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle, Stack,
-  Typography
+  DialogTitle,
+  Stack,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { deleteObject, getStorage, ref } from "firebase/storage";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import GradientBLACK from "../../Assets/20210113_083213.png";
 import Serves from "../../Common/Ribbons/Serves";
@@ -25,21 +27,27 @@ import Veg from "../../Common/Ribbons/Veg";
 import { setSelectedRecipe } from "../../redux/slices/recipeSlice";
 import { db } from "../../services/firebase";
 
-import Slide from '@mui/material/Slide';
+import Slide from "@mui/material/Slide";
+import { getLoggedUser } from "../../redux/slices/userSlice";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const RecipeCard = (props) => {
-  let { navTo } = props;
+  let { navTo, recipe, isReloadList } = props;
   let { _id, uid, title, name, finish, serves } = props.recipe;
   const [liked, setLiked] = useState(false);
+  const [favouritedBy, setFavouritedBy] = useState(recipe.favouritedBy);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-
+  const loggedUser = useSelector(getLoggedUser);
   const [open, setOpen] = React.useState(false);
+
+  useEffect(() => {
+    let cond = recipe.favouritedBy.includes(loggedUser.uid);
+    setLiked(cond);
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -78,6 +86,37 @@ const RecipeCard = (props) => {
       .catch((error) => {
         console.log(error.message);
       });
+  };
+
+  const handleLikeRecipe = () => {
+    const taskDocRef = doc(db, "recipes", recipe._id);
+    console.log(taskDocRef, recipe);
+    try {
+      let favourited_by = favouritedBy;
+      if (liked) {
+        favourited_by = favourited_by.filter((id) => id !== loggedUser.uid);
+      } else {
+        favourited_by = [...favourited_by, loggedUser.uid];
+      }
+      let recipe_obj = {
+        favouritedBy: favourited_by,
+      };
+      updateDoc(taskDocRef, recipe_obj)
+        .then((res) => {
+          console.log(res);
+          setFavouritedBy(favourited_by);
+          setLiked(!liked);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        if(isReloadList){
+          props.getUserRecipes();
+        }
+    } catch (error) {
+      console.log(error);
+      alert(error.message);
+    }
   };
 
   return (
@@ -161,30 +200,32 @@ const RecipeCard = (props) => {
           src={GradientBLACK}
         />
       </Card>
-      <IconButton
-        size="large"
-        sx={{
-          position: "absolute",
-          top: 5,
-          right: 5,
-          backgroundColor: "rgba(0,0,0,0.2) !important",
-        }}
-        onClick={(e) => {
-          if (props?.uid === uid) {
-            handleClickOpen();
-          } else {
-            setLiked(!liked);
-          }
-        }}
-      >
-        {props?.uid === uid ? (
-          <DeleteIcon sx={{ fontSize: "1.5rem", color: "white" }} />
-        ) : liked ? (
-          <FavoriteIcon sx={{ fontSize: "1.5rem", color: "white" }} />
-        ) : (
-          <FavoriteBorderIcon sx={{ fontSize: "1.5rem", color: "white" }} />
-        )}
-      </IconButton>
+      <Tooltip title="Add to favourite">
+        <IconButton
+          size="large"
+          sx={{
+            position: "absolute",
+            top: 5,
+            right: 5,
+            backgroundColor: "rgba(0,0,0,0.2) !important",
+          }}
+          onClick={(e) => {
+            if (props?.uid === uid) {
+              handleClickOpen();
+            } else {
+              handleLikeRecipe();
+            }
+          }}
+        >
+          {props?.uid === uid ? (
+            <DeleteIcon sx={{ fontSize: "1.5rem", color: "white" }} />
+          ) : liked ? (
+            <FavoriteIcon sx={{ fontSize: "1.5rem", color: "white" }} />
+          ) : (
+            <FavoriteBorderIcon sx={{ fontSize: "1.5rem", color: "white" }} />
+          )}
+        </IconButton>
+      </Tooltip>
       <Stack
         sx={{ position: "absolute", top: 8, left: 8 }}
         direction="row"

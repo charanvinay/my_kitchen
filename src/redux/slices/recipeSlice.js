@@ -22,6 +22,7 @@ export const initialState = {
     },
   ],
   finish: { errors: [], imgSrc: "", value: "" },
+  favouritedBy: [],
   createdAt: "",
 };
 export const recipeSlice = createSlice({

@@ -184,6 +184,7 @@ const Finish = (props) => {
     console.log(taskDocRef);
     try {
       let recipe_obj = {
+        _id: recipe._id,
         uid: loggedUser.uid,
         name: loggedUser.name,
         email: loggedUser.email,
@@ -363,7 +364,7 @@ const Finish = (props) => {
             >
               Preview
             </Typography>
-            {location.pathname === "add" ? (
+            {location.pathname === "/add" ? (
               <Button
                 variant="outlined"
                 color="inherit"
