@@ -62,7 +62,7 @@ const Dashboard = () => {
                 <RecipeCard
                   key={recipe._id}
                   recipe={recipe}
-                  navTo={"/view"}
+                  navTo={`/view?id=${recipe._id}`}
                   getUserRecipes={getUserRecipes}
                 />
               </Grid>

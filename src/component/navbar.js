@@ -90,7 +90,7 @@ function Navbar() {
               textDecoration: "none",
             }}
           >
-            Let's Cook
+            LetUsCook
           </Typography>
           <Box
             sx={{
