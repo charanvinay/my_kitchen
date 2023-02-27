@@ -1,12 +1,16 @@
 import { createTheme } from "@mui/material";
 import { bgSecondary, primary } from "./Pallete";
-import BadgeIcon from "@mui/icons-material/Badge";
-import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
-import CorporateFareOutlinedIcon from "@mui/icons-material/CorporateFareOutlined";
-import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
-import PercentOutlinedIcon from "@mui/icons-material/PercentOutlined";
+import Beverages from "./Ribbons/Beverages";
+import Breakfast from "./Ribbons/Breakfast";
+import Egg from "./Ribbons/Egg";
+import NonVeg from "./Ribbons/NonVeg";
+import Snacks from "./Ribbons/Snacks";
+import Veg from "./Ribbons/Veg";
 
-export const getUniqueId = () => ((new Date().getTime()).toString(36))+'_'+(Date.now() + Math.random().toString()).split('.').join("_");
+export const getUniqueId = () =>
+  new Date().getTime().toString(36) +
+  "_" +
+  (Date.now() + Math.random().toString()).split(".").join("_");
 
 export const colourStyles = {
   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -134,4 +138,14 @@ export const bottomButtonsStyle = {
   alignItems: "end",
 };
 
-
+export const returnType = (type) => {
+  const obj = {
+    Veg: <Veg />,
+    NonVeg: <NonVeg />,
+    Snacks: <Snacks />,
+    Breakfast: <Breakfast />,
+    Beverage: <Beverages />,
+    Egg: <Egg />
+  };
+  return obj[type];
+};

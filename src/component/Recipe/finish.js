@@ -36,7 +36,12 @@ import ErrorAlert from "../../Common/ErrorAlert";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
-import { editFinish, getRecipe } from "../../redux/slices/recipeSlice";
+import {
+  editFinish,
+  getRecipe,
+  initialState,
+  setSelectedRecipe,
+} from "../../redux/slices/recipeSlice";
 import {
   getIsMobile,
   getLoggedUser,
@@ -161,7 +166,7 @@ const Finish = (props) => {
     return errors;
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     try {
       let recipe_obj = {
         uid: loggedUser.uid,
@@ -171,15 +176,19 @@ const Finish = (props) => {
         ...recipe,
       };
       console.log(recipe_obj);
-      await addDoc(collection(db, "recipes"), recipe_obj);
-      navigate("/home");
-      dispatch(handleReset());
+      addDoc(collection(db, "recipes"), recipe_obj)
+        .then((res) => {
+          navigate("/home");
+          dispatch(handleReset());
+          dispatch(setSelectedRecipe(initialState));
+          handleClose();
+        })
+        .catch((err) => console.log(err));
     } catch (error) {
       console.log(error);
     }
-    handleClose();
   };
-  const handleUpdate = async () => {
+  const handleUpdate = () => {
     const taskDocRef = doc(db, "recipes", recipe._id);
     console.log(taskDocRef);
     try {
@@ -191,16 +200,22 @@ const Finish = (props) => {
         photoURL: loggedUser.photoURL,
         ...recipe,
       };
-      await updateDoc(taskDocRef, recipe_obj);
-      navigate("/home");
-      dispatch(handleReset());
+      updateDoc(taskDocRef, recipe_obj)
+        .then((res) => {
+          navigate("/profile");
+          dispatch(handleReset());
+          dispatch(setSelectedRecipe(initialState));
+          handleClose();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } catch (error) {
       console.log(error);
     }
-    handleClose();
   };
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     const { target = {} } = event || {};
     target.value = "";
   };
@@ -268,13 +283,13 @@ const Finish = (props) => {
                       id="uploadPhotoInput"
                       name="uploadPhotoInput"
                       capture="environment"
-                      value=''
+                      value=""
                       onChange={(e) => {
                         e.preventDefault();
-                        alert(e.target.files[0].name)
+                        alert(e.target.files[0].name);
                         // handleChanges(e.target.files[0], "image");
                       }}
-                      onClick={handleClick} 
+                      onClick={handleClick}
                     />
                   </Button>
                 </Box>

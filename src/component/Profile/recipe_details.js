@@ -1,4 +1,4 @@
-import { Avatar, Box, Container, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Container, Fab, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
@@ -7,21 +7,27 @@ import HeadingXLBold from "../../Common/HeadingXLBold";
 import ImgWithBorder from "../../Common/ImgWithBorder";
 import Subtitle1 from "../../Common/Subtitle1";
 
-import {
-  doc,
-  getDoc
-} from "firebase/firestore";
-import { useLocation } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { useLocation, useNavigate } from "react-router-dom";
 import Serves from "../../Common/Ribbons/Serves";
 import Veg from "../../Common/Ribbons/Veg";
 import { db } from "../../services/firebase";
 import { BookLoaderComponent } from "../../Common/BookLoader";
+import EditIcon from "@mui/icons-material/Edit";
+import { useDispatch, useSelector } from "react-redux";
+import { getLoggedUser } from "../../redux/slices/userSlice";
+import { setSelectedRecipe } from "../../redux/slices/recipeSlice";
+import { returnType } from "../../Common/Constants";
 
 const RecipeDetails = () => {
   const [recipe, setRecipe] = useState({});
   const [loading, setLoading] = useState(true);
   const search = useLocation().search;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const id = new URLSearchParams(search).get("id");
+  const loggedUser = useSelector(getLoggedUser);
+
   useEffect(() => {
     console.log(id);
     if (id) {
@@ -53,7 +59,10 @@ const RecipeDetails = () => {
       {loading ? (
         <BookLoaderComponent height={"90vh"} />
       ) : (
-        <Container maxWidth="lg" sx={{ marginTop: 6, marginBottom: 5 }}>
+        <Container
+          maxWidth="lg"
+          sx={{ marginTop: 6, marginBottom: 5, position: "relative" }}
+        >
           <Stack direction={"row"} spacing={1}>
             <Avatar src={recipe.photoURL} />
             <Stack>
@@ -75,7 +84,7 @@ const RecipeDetails = () => {
           <Box>
             <HeadingXLBold text={recipe.title} />
             <Stack direction={"row"} spacing={0.5} alignItems="center">
-              <Veg />
+              {returnType(recipe.type)}
               <Serves serves={recipe.serves} />
             </Stack>
           </Box>
@@ -131,6 +140,23 @@ const RecipeDetails = () => {
               <ImgWithBorder imgSrc={recipe.finish.imgSrc} />
             )}
           </Stack>
+          {loggedUser.uid == recipe.uid && (
+            <Fab
+              color="primary"
+              aria-label="add"
+              sx={{
+                position: "fixed",
+                bottom: 16,
+                right: 16,
+              }}
+              onClick={() => {
+                navigate("/edit");
+                dispatch(setSelectedRecipe(recipe));
+              }}
+            >
+              <EditIcon />
+            </Fab>
+          )}
         </Container>
       )}
     </>

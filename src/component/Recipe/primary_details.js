@@ -138,14 +138,14 @@ const PrimaryDetails = (props) => {
             sx={{ width: "100%" }}
             renderValue={(selected) => {
               if (!Boolean(selected)) {
-                return <p style={{ color: "rgb(191 191 191)" }}>Eg: Non-Veg</p>;
+                return <p style={{ color: "rgb(191 191 191)" }}>Eg: NonVeg</p>;
               }
               return selected;
             }}
             onChange={handleChanges}
           >
             <MenuItem value={"Veg"}>Veg</MenuItem>
-            <MenuItem value={"Non-Veg"}>Non-Veg</MenuItem>
+            <MenuItem value={"NonVeg"}>NonVeg</MenuItem>
             <MenuItem value={"Egg"}>Egg</MenuItem>
             <MenuItem value={"Breakfast"}>Breakfast</MenuItem>
             <MenuItem value={"Snacks"}>Snacks</MenuItem>

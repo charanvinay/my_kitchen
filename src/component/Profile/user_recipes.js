@@ -84,7 +84,7 @@ const UserRecipes = () => {
                     key={recipe._id}
                     uid={loggedUser?.uid}
                     recipe={recipe}
-                    navTo={"/edit"}
+                    navTo={`/view?id=${recipe._id}`}
                     getUserRecipes={getUserRecipes}
                     handleDelete={() => handleDelete(recipe._id)}
                   />

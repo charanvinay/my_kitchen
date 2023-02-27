@@ -64,7 +64,7 @@ const Favorite = () => {
                 <RecipeCard
                   key={recipe._id}
                   recipe={recipe}
-                  navTo={"/view"}
+                  navTo={`/view?id=${recipe._id}`}
                   isReloadList={true}
                   getUserRecipes={getUserRecipes}
                 />
