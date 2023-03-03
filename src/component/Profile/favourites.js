@@ -1,11 +1,10 @@
 import { Box, Container, Grid, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import {
-  collection, getDocs, query
-} from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import NoData from "../../Assets/no_data_found.svg";
+import HeadingLGBlue from "../../Common/HeadingLGBlue";
 import RecipeCardSkeleton from "../../Common/Skeletons/RecipeCard";
 import { getLoggedUser } from "../../redux/slices/userSlice";
 import { db } from "../../services/firebase";
@@ -57,21 +56,24 @@ const Favorite = () => {
         </Grid>
       )}
       {!loadding && recipesList.length > 0 ? (
-        <Grid container spacing={3}>
-          {recipesList?.map((recipe) => {
-            return (
-              <Grid item xs={12} md={4} key={recipe._id}>
-                <RecipeCard
-                  key={recipe._id}
-                  recipe={recipe}
-                  navTo={`/view?id=${recipe._id}`}
-                  isReloadList={true}
-                  getUserRecipes={getUserRecipes}
-                />
-              </Grid>
-            );
-          })}
-        </Grid>
+        <Box sx={{ marginTop: 2 }}>
+          <HeadingLGBlue text1="Explore" text2="Favourites" />
+          <Grid container spacing={3} sx={{ marginTop: 2 }}>
+            {recipesList?.map((recipe) => {
+              return (
+                <Grid item xs={12} md={4} key={recipe._id}>
+                  <RecipeCard
+                    key={recipe._id}
+                    recipe={recipe}
+                    navTo={`/view?id=${recipe._id}`}
+                    isReloadList={true}
+                    getUserRecipes={getUserRecipes}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Box>
       ) : (
         <Box
           sx={{
