@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { primary } from "../Common/Pallete";
 import { getLoggedUser, handleLoggedUser } from "../redux/slices/userSlice";
 import { auth, logOut } from "../services/firebase";
 
@@ -72,21 +73,21 @@ function Navbar() {
   };
 
   return (
-    <AppBar>
+    <AppBar className="app__navbar" elevation={0}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
             variant="h5"
             noWrap
             component="a"
-            href="/"
+            href="/home"
             sx={{
               mr: 2,
               display: { xs: "flex" },
               flexGrow: 1,
               fontWeight: 700,
               letterSpacing: ".1rem",
-              color: "inherit",
+              color: primary,
               textDecoration: "none",
             }}
           >
@@ -104,9 +105,8 @@ function Navbar() {
                 <IconButton
                   size="large"
                   onClick={() => navigate(page.route)}
-                  color="inherit"
                 >
-                  {page.id==2 && <FavoriteBorderIcon alt={page.tooltip} />}
+                  {page.id==2 && <FavoriteBorderIcon alt={page.tooltip} sx={{color: primary}} />}
                 </IconButton>
               </Tooltip>
             ))}

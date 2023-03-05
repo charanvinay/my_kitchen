@@ -2,7 +2,7 @@
 :root {
   --primary: #176ede;
   --bg-primary: #fff;
-  --bg-secondary: #f8f9fa;
+  --bg-secondary: #EDF2F8;
   --bg-terinary: #fafafa;
 }
 
@@ -36,4 +36,11 @@ body {
 ::-webkit-scrollbar-thumb {
   border-radius: 50px;
   background: #d4d9e2;
+}
+
+.app__navbar {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
