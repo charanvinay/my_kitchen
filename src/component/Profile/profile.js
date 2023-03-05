@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 import UserRecipes from "./user_recipes";
 import { useSelector } from "react-redux";
 import { getLoggedUser } from "../../redux/slices/userSlice";
-// import TopCover from "../../Assets/coverblack.jpg";
-import TopCover from "../../Assets/coverslate.jpg";
-import { primary } from "../../Common/Pallete";
+import TopCover from "../../Assets/coverblack.jpg";
+// import TopCover from "../../Assets/coverslate.jpg";
+import { bgBody, primary } from "../../Common/Pallete";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const Profile = () => {
 
   return (
     <Box sx={{ position: "relative" }}>
-      <Box sx={{ width: "100%", height: 150, backgroundColor: primary }}>
+      <Box sx={{ width: "100%", height: 150, backgroundColor: bgBody }}>
         <img
           src={TopCover}
           alt="Cover Photo"
