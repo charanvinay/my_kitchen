@@ -30,18 +30,22 @@ const UserRecipes = () => {
   const getUserRecipes = async () => {
     setRecipesList([]);
     setLoadding(true);
-    let user_ref = query(
-      collection(db, "recipes"),
-      where("uid", "==", loggedUser?.uid)
-    );
-    let user_docs = await getDocs(user_ref);
-    if (user_docs.docs.length > 0) {
-      let recipes = [];
-      user_docs.docs.map((doc) => {
-        recipes.push({ _id: doc.id, ...doc.data() });
-      });
-      console.log(recipes);
-      setRecipesList([...recipes]);
+    try {
+      let user_ref = query(
+        collection(db, "recipes"),
+        where("uid", "==", loggedUser?.uid)
+      );
+      let user_docs = await getDocs(user_ref);
+      if (user_docs.docs.length > 0) {
+        let recipes = [];
+        user_docs.docs.map((doc) => {
+          recipes.push({ _id: doc.id, ...doc.data() });
+        });
+        console.log(recipes);
+        setRecipesList([...recipes]);
+      }
+    } catch (error) {
+      console.log(error);
     }
     setLoadding(false);
   };

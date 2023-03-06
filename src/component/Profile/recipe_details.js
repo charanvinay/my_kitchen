@@ -42,7 +42,7 @@ const RecipeDetails = () => {
       getDoc(docRef)
         .then((docSnap) => {
           console.log(docSnap.data());
-          setRecipe({ ...docSnap.data() });
+          setRecipe({ _id: id, ...docSnap.data() });
           setLoading(false);
         })
         .catch((err) => {

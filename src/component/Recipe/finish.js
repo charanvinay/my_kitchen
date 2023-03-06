@@ -174,6 +174,7 @@ const Finish = (props) => {
         email: loggedUser.email,
         photoURL: loggedUser.photoURL,
         ...recipe,
+        title: recipe?.title?.toLowerCase(),
       };
       console.log(recipe_obj);
       addDoc(collection(db, "recipes"), recipe_obj)
@@ -199,6 +200,7 @@ const Finish = (props) => {
         email: loggedUser.email,
         photoURL: loggedUser.photoURL,
         ...recipe,
+        title: recipe?.title?.toLowerCase(),
       };
       updateDoc(taskDocRef, recipe_obj)
         .then((res) => {

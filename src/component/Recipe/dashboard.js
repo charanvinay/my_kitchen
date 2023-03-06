@@ -1,6 +1,6 @@
 import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { collection, getDocs, query } from "firebase/firestore";
+import { collection, collectionGroup, endAt, getDocs, orderBy, query, startAt, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import NoData from "../../Assets/no_data_found.svg";
@@ -25,22 +25,33 @@ const Dashboard = () => {
   }, [user, loading]);
 
   const getUserRecipes = async () => {
+    var searchString = ""
     setRecipesList([]);
     setLoadding(true);
-    let user_ref = query(
-      collection(db, "recipes")
-      // where("uid", "==", user?.uid)
-    );
-    let user_docs = await getDocs(user_ref);
-    if (user_docs.docs.length > 0) {
-      let recipes = [];
-      user_docs.docs.map((doc) => {
-        recipes.push({ _id: doc.id, ...doc.data() });
-      });
-      console.log(recipes);
-      setRecipesList([...recipes]);
+    try {
+      let user_ref = query(
+        collection(db, "recipes"),
+        orderBy("title"),
+        where("title", ">=", searchString),
+        where("title", "<=", searchString + "\uf8ff")
+        
+        // endAt(searchString + '\uf8ff')
+        // where("uid", "==", user?.uid)
+      );
+      let user_docs = await getDocs(user_ref);
+      console.log(user_docs.docs);
+      if (user_docs.docs.length > 0) {
+        let recipes = [];
+        user_docs.docs.map((doc) => {
+          recipes.push({ _id: doc.id, ...doc.data() });
+        });
+        console.log(recipes);
+        setRecipesList([...recipes]);
+      }
+      setLoadding(false);
+    } catch (error) {
+      console.log(error);
     }
-    setLoadding(false);
   };
 
   return (
