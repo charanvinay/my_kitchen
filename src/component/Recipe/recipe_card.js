@@ -18,13 +18,13 @@ import {
 import IconButton from "@mui/material/IconButton";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { deleteObject, getStorage, ref } from "firebase/storage";
+import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import GradientBLACK from "../../Assets/20210113_083213.png";
 import Serves from "../../Common/Ribbons/Serves";
 import { db } from "../../services/firebase";
-
 import Slide from "@mui/material/Slide";
 import { returnType } from "../../Common/Constants";
 import { getLoggedUser } from "../../redux/slices/userSlice";
@@ -35,7 +35,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const RecipeCard = (props) => {
   let { navTo, recipe, isReloadList } = props;
-  let { _id, uid, title, name, finish, serves, type } = props.recipe;
+  let { _id, uid, title, name, finish, serves, type, createdAt } = props.recipe;
   const [liked, setLiked] = useState(false);
   const [favouritedBy, setFavouritedBy] = useState(recipe.favouritedBy);
   const dispatch = useDispatch();
@@ -173,7 +173,7 @@ const RecipeCard = (props) => {
             color="#cbcaca"
             sx={{ textTransform: "capitalize", letterSpacing: 0.5 }}
           >
-            {` by ${name}`}
+            {` by ${name} | ${moment.utc(createdAt).local().startOf('seconds').fromNow()}`}
           </Typography>
         </CardContent>
         <div
