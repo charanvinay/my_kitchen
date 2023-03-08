@@ -37,6 +37,7 @@ import {
 } from "../../redux/slices/filtersSlice";
 import { auth, db } from "../../services/firebase";
 import RecipeCard from "./recipe_card";
+import CloseIcon from "@mui/icons-material/Close";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -127,6 +128,9 @@ const Dashboard = () => {
             alignItems: "center",
           }}
         >
+          <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+            <SearchIcon />
+          </IconButton>
           <InputBase
             sx={{ ml: 1, flex: 1 }}
             placeholder="Search Recipe"
@@ -137,9 +141,14 @@ const Dashboard = () => {
               dispatch(setSearchText({ searchText: e.target.value }));
             }}
           />
-          <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-            <SearchIcon />
-          </IconButton>
+          {filtersState.searchText && <IconButton
+            type="button"
+            sx={{ p: "10px" }}
+            aria-label="search"
+            onClick={() => dispatch(setSearchText({ searchText: "" }))}
+          >
+            <CloseIcon />
+          </IconButton>}
         </Paper>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           {filtersState.isFiltersApplied && (
