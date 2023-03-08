@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 let initialState = {
     searchText: '',
     type: '',
-    serves: "1",
+    serves: '',
     isFiltersApplied: false,
 };
 

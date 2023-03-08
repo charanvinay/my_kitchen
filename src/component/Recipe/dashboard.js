@@ -67,7 +67,7 @@ const Dashboard = () => {
         collection(db, "recipes"),
         orderBy("title"),
         where("title", ">=", filtersState.searchText),
-        where("title", "<=", filtersState.searchText + "\uf8ff"),
+        where("title", "<=", filtersState.searchText + "\uf8ff")
 
         // endAt(filtersState.searchText + '\uf8ff')
         // where("uid", "==", user?.uid)
@@ -105,16 +105,12 @@ const Dashboard = () => {
     dispatch(setIsFiltersApplied({ isFiltersApplied: true }));
   };
 
-  const handleSliderChange = (event) => {
-    dispatch(setRecipeServes({ serves: `${event.target.value}` }));
-  };
-
   const handleResetType = () => {
     dispatch(setRecipeType({ type: null }));
     getUserRecipes();
   };
   const handleResetServes = () => {
-    dispatch(setRecipeServes({ serves: `1` }));
+    dispatch(setRecipeServes({ serves: null }));
     getUserRecipes();
   };
 
@@ -151,10 +147,12 @@ const Dashboard = () => {
               {Boolean(filtersState.type) && (
                 <Chip label={filtersState.type} onDelete={handleResetType} />
               )}
-              <Chip
-                label={`Serves - ${filtersState.serves}`}
-                onDelete={handleResetServes}
-              />
+              {Boolean(filtersState.serves) && (
+                <Chip
+                  label={`Serves - ${filtersState.serves}`}
+                  onDelete={handleResetServes}
+                />
+              )}
             </Stack>
           )}
           <Box
@@ -254,21 +252,27 @@ const Dashboard = () => {
             )}
           </Stack>
           <HeadingMD text={"SERVES"} width={70} />
-          <Box sx={{ paddingX: 6, paddingY: 4 }}>
-            <Slider
-              aria-label="serves"
-              defaultValue={1}
-              valueLabelDisplay="auto"
-              value={parseInt(filtersState.serves)}
-              onChange={handleSliderChange}
-              step={1}
-              min={1}
-              max={8}
-              marks={recipeServes.map((serve) => {
-                return { value: parseInt(serve), label: serve };
-              })}
-            />
-          </Box>
+          <Stack direction="row" flexWrap="wrap" gap={1}>
+            {recipeServes.map((serve, ind) =>
+              filtersState.serves == serve ? (
+                <Chip
+                  label={serve}
+                  key={ind}
+                  color="primary"
+                  sx={{ fontFamily: "Poppins, sans-serif !important" }}
+                  onClick={() => dispatch(setRecipeServes({ serves: serve }))}
+                />
+              ) : (
+                <Chip
+                  label={serve}
+                  key={ind}
+                  variant="outlined"
+                  sx={{ fontFamily: "Poppins, sans-serif !important" }}
+                  onClick={() => dispatch(setRecipeServes({ serves: serve }))}
+                />
+              )
+            )}
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleFiltersModalClose}>Clear</Button>
