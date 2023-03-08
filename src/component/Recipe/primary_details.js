@@ -17,7 +17,7 @@ import moment from "moment";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { bottomButtonsStyle, getUniqueId } from "../../Common/Constants";
+import { bottomButtonsStyle, getUniqueId, recipeServes, recipeTypes } from "../../Common/Constants";
 import ErrorAlert from "../../Common/ErrorAlert";
 import HeadingMD from "../../Common/HeadingMD";
 import {
@@ -144,12 +144,7 @@ const PrimaryDetails = (props) => {
             }}
             onChange={handleChanges}
           >
-            <MenuItem value={"Veg"}>Veg</MenuItem>
-            <MenuItem value={"NonVeg"}>NonVeg</MenuItem>
-            <MenuItem value={"Egg"}>Egg</MenuItem>
-            <MenuItem value={"Breakfast"}>Breakfast</MenuItem>
-            <MenuItem value={"Snacks"}>Snacks</MenuItem>
-            <MenuItem value={"Beverage"}>Beverage</MenuItem>
+            {recipeTypes.map((type, ind)=> <MenuItem value={type} key={ind}>{type}</MenuItem>)}
           </Select>
         </Grid>
         <Grid item xs={12} md={4}>
@@ -167,7 +162,7 @@ const PrimaryDetails = (props) => {
             }}
             onChange={handleChanges}
           >
-            {["1", "2", "3", "4", "5", "6", "7", "8"].map((num) => (
+            {recipeServes.map((num) => (
               <MenuItem value={num} key={num}>
                 {num}
               </MenuItem>

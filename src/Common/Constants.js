@@ -149,3 +149,7 @@ export const returnType = (type) => {
   };
   return obj[type];
 };
+
+export const recipeTypes = ["Veg", "NonVeg", "Egg", "Breakfast", "Snacks", "Beverage"]
+
+export const recipeServes = ["1", "2", "3", "4", "5", "6", "7", "8"];

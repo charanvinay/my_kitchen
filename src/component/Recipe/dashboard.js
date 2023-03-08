@@ -1,31 +1,54 @@
+import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   Button,
+  Chip,
   Container,
+  Dialog,
   Grid,
   IconButton,
   InputBase,
   Paper,
+  Slider,
   Stack,
   Typography,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useDispatch, useSelector } from "react-redux";
 import NoData from "../../Assets/no_data_found.svg";
+import { recipeServes, recipeTypes } from "../../Common/Constants";
 import HeadingLGBlue from "../../Common/HeadingLGBlue";
+import HeadingMD from "../../Common/HeadingMD";
 import RecipeCardSkeleton from "../../Common/Skeletons/RecipeCard";
+import {
+  getFiltersState,
+  setIsFiltersApplied,
+  setRecipeServes,
+  setRecipeType,
+  setSearchText,
+} from "../../redux/slices/filtersSlice";
 import { auth, db } from "../../services/firebase";
 import RecipeCard from "./recipe_card";
-import FilterListIcon from "@mui/icons-material/FilterList";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const Dashboard = () => {
   const [user, loading] = useAuthState(auth);
   const [recipesList, setRecipesList] = useState([]);
   const [loadding, setLoadding] = useState(true);
-  const [searchText, setSearchText] = useState("");
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
+  const filtersState = useSelector(getFiltersState);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (loading) {
@@ -43,10 +66,10 @@ const Dashboard = () => {
       let user_ref = query(
         collection(db, "recipes"),
         orderBy("title"),
-        where("title", ">=", searchText),
-        where("title", "<=", searchText + "\uf8ff")
+        where("title", ">=", filtersState.searchText),
+        where("title", "<=", filtersState.searchText + "\uf8ff"),
 
-        // endAt(searchText + '\uf8ff')
+        // endAt(filtersState.searchText + '\uf8ff')
         // where("uid", "==", user?.uid)
       );
       let user_docs = await getDocs(user_ref);
@@ -67,10 +90,36 @@ const Dashboard = () => {
 
   useEffect(() => {
     getUserRecipes();
-  }, [searchText]);
+  }, [filtersState.searchText]);
+
+  const handleFiltersModalClose = () => {
+    handleResetType();
+    handleResetServes();
+    setShowFiltersModal(false);
+    dispatch(setIsFiltersApplied({ isFiltersApplied: false }));
+  };
+
+  const handleFiltersModalApply = () => {
+    getUserRecipes();
+    setShowFiltersModal(false);
+    dispatch(setIsFiltersApplied({ isFiltersApplied: true }));
+  };
+
+  const handleSliderChange = (event) => {
+    dispatch(setRecipeServes({ serves: `${event.target.value}` }));
+  };
+
+  const handleResetType = () => {
+    dispatch(setRecipeType({ type: null }));
+    getUserRecipes();
+  };
+  const handleResetServes = () => {
+    dispatch(setRecipeServes({ serves: `1` }));
+    getUserRecipes();
+  };
 
   return (
-    <Container maxWidth="lg" sx={{ p: 3 }}>
+    <Container maxWidth="lg" sx={{ paddingX: 3, paddingY: 4 }}>
       <HeadingLGBlue text1="Explore" text2="Recipes" />
       <Stack spacing={2} sx={{ marginY: 2 }}>
         <Paper
@@ -86,32 +135,57 @@ const Dashboard = () => {
             sx={{ ml: 1, flex: 1 }}
             placeholder="Search Recipe"
             inputProps={{ "aria-label": "search recipe" }}
-            value={searchText}
+            value={filtersState.searchText}
             onChange={(e) => {
               console.log(e.target.value);
-              setSearchText(e.target.value);
+              dispatch(setSearchText({ searchText: e.target.value }));
             }}
           />
           <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
             <SearchIcon />
           </IconButton>
         </Paper>
-        <Stack>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-            <Button sx={{alignItems: "start"}} startIcon={<FilterListIcon />}>Filter</Button>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          {filtersState.isFiltersApplied && (
+            <Stack direction="row" spacing={1}>
+              {Boolean(filtersState.type) && (
+                <Chip label={filtersState.type} onDelete={handleResetType} />
+              )}
+              <Chip
+                label={`Serves - ${filtersState.serves}`}
+                onDelete={handleResetServes}
+              />
+            </Stack>
+          )}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Button
+              sx={{ alignItems: "start" }}
+              startIcon={<FilterListIcon />}
+              onClick={() => {
+                setShowFiltersModal(true);
+              }}
+            >
+              Filter
+            </Button>
           </Box>
-        </Stack>
+        </Box>
       </Stack>
-      {loadding && (
+      {loadding ? (
         <Grid container spacing={{ xs: 6, md: 3 }}>
-          {[1, 2, 3, 4, 5, 6].map((loader) => (
+          {[1, 2, 3].map((loader) => (
             <Grid item xs={12} md={4} key={loader}>
               <RecipeCardSkeleton />
             </Grid>
           ))}
         </Grid>
-      )}
-      {!loadding && recipesList.length > 0 ? (
+      ) : recipesList.length > 0 ? (
         <Box sx={{ marginTop: 2 }}>
           <Grid container spacing={3}>
             {recipesList?.map((recipe) => {
@@ -134,7 +208,7 @@ const Dashboard = () => {
             width: "100%",
             display: "flex",
             flexDirection: "column",
-            height: "80vh",
+            height: "50vh",
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -142,12 +216,65 @@ const Dashboard = () => {
           <img src={NoData} style={{ width: "150px", height: "150px" }} />
           <Typography
             variant="body2"
-            sx={{ textAlign: "center", color: grey[300] }}
+            sx={{ textAlign: "center", color: grey[400] }}
           >
             No Recipes found {<br />} Click on the '+' button to add a recipe
           </Typography>
         </Box>
       )}
+      <Dialog
+        open={showFiltersModal}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleFiltersModalClose}
+        aria-describedby="filters-dialog"
+      >
+        <DialogTitle>{"Select required filter"}</DialogTitle>
+        <DialogContent>
+          <HeadingMD text={"RECIPE TYPE"} width={70} />
+          <Stack direction="row" flexWrap="wrap" gap={1}>
+            {recipeTypes.map((type, ind) =>
+              filtersState.type == type ? (
+                <Chip
+                  label={type}
+                  key={ind}
+                  color="primary"
+                  sx={{ fontFamily: "Poppins, sans-serif !important" }}
+                  onClick={() => dispatch(setRecipeType({ type: type }))}
+                />
+              ) : (
+                <Chip
+                  label={type}
+                  key={ind}
+                  variant="outlined"
+                  sx={{ fontFamily: "Poppins, sans-serif !important" }}
+                  onClick={() => dispatch(setRecipeType({ type: type }))}
+                />
+              )
+            )}
+          </Stack>
+          <HeadingMD text={"SERVES"} width={70} />
+          <Box sx={{ paddingX: 6, paddingY: 4 }}>
+            <Slider
+              aria-label="serves"
+              defaultValue={1}
+              valueLabelDisplay="auto"
+              value={parseInt(filtersState.serves)}
+              onChange={handleSliderChange}
+              step={1}
+              min={1}
+              max={8}
+              marks={recipeServes.map((serve) => {
+                return { value: parseInt(serve), label: serve };
+              })}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleFiltersModalClose}>Clear</Button>
+          <Button onClick={handleFiltersModalApply}>Apply</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

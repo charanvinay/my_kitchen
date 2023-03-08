@@ -88,7 +88,7 @@ const Favorite = () => {
           <img src={NoData} style={{ width: "150px", height: "150px" }} />
           <Typography
             variant="body2"
-            sx={{ textAlign: "center", color: grey[300] }}
+            sx={{ textAlign: "center", color: grey[400] }}
           >
             No Recipes found {<br />} Click on the '+' button to add a recipe
           </Typography>
