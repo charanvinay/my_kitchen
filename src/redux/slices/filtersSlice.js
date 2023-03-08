@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 let initialState = {
     searchText: '',
-    type: '',
-    serves: '',
+    type: null,
+    serves: null,
     isFiltersApplied: false,
 };
 

@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 import {
@@ -9,10 +10,8 @@ import {
   Grid,
   IconButton,
   InputBase,
-  Paper,
-  Slider,
-  Stack,
-  Typography,
+  Paper, Stack,
+  Typography
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import DialogActions from "@mui/material/DialogActions";
@@ -33,11 +32,10 @@ import {
   setIsFiltersApplied,
   setRecipeServes,
   setRecipeType,
-  setSearchText,
+  setSearchText
 } from "../../redux/slices/filtersSlice";
 import { auth, db } from "../../services/firebase";
 import RecipeCard from "./recipe_card";
-import CloseIcon from "@mui/icons-material/Close";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -49,16 +47,18 @@ const Dashboard = () => {
   const [loadding, setLoadding] = useState(true);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
   const filtersState = useSelector(getFiltersState);
+  const [type, setType] = useState(filtersState.type);
+  const [serves, setServes] = useState(filtersState.serves);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (loading) {
-      return;
-    }
-    if (user) {
-      getUserRecipes();
-    }
-  }, [user, loading]);
+  // useEffect(() => {
+  //   if (loading) {
+  //     return;
+  //   }
+  //   if (user) {
+  //     getUserRecipes();
+  //   }
+  // }, [user, loading]);
 
   const getUserRecipes = async () => {
     setRecipesList([]);
@@ -67,11 +67,17 @@ const Dashboard = () => {
       let user_ref = query(
         collection(db, "recipes"),
         orderBy("title"),
-        where("title", ">=", filtersState.searchText),
-        where("title", "<=", filtersState.searchText + "\uf8ff")
-
-        // endAt(filtersState.searchText + '\uf8ff')
-        // where("uid", "==", user?.uid)
+        where("title", ">=", filtersState.searchText?.toLowerCase()),
+        where("title", "<=", filtersState.searchText?.toLowerCase() + "\uf8ff"),
+        // orderBy("type"),
+        // where("type", ">=", filtersState.type || ""),
+        // where("type", "<=", filtersState.type || "" + "\uf8ff"),
+        // orderBy("serves"),
+        // where("serves", ">=", filtersState.serves || ""),
+        // where("serves", "<=", filtersState.serves || "" + "\uf8ff"),
+        // where("serves", filtersState.serves ? "==" : ">=", filtersState.serves || ""),
+        // where("type", filtersState.type ? "==" : ">=", filtersState.type || ""),
+        // where("serves", "==", filtersState.serves || ""),
       );
       let user_docs = await getDocs(user_ref);
       console.log(user_docs.docs);
@@ -80,6 +86,14 @@ const Dashboard = () => {
         user_docs.docs.map((doc) => {
           recipes.push({ _id: doc.id, ...doc.data() });
         });
+        if (filtersState.type) {
+          recipes = recipes.filter((dtype) => dtype.type == filtersState.type);
+        }
+        if (filtersState.serves) {
+          recipes = recipes.filter(
+            (dserves) => dserves.serves === filtersState.serves
+          );
+        }
         console.log(recipes);
         setRecipesList([...recipes]);
       }
@@ -93,6 +107,12 @@ const Dashboard = () => {
     getUserRecipes();
   }, [filtersState.searchText]);
 
+  useEffect(() => {
+    if (!showFiltersModal) {
+      getUserRecipes();
+    }
+  }, [showFiltersModal, filtersState.type, filtersState.serves]);
+
   const handleFiltersModalClose = () => {
     handleResetType();
     handleResetServes();
@@ -101,18 +121,19 @@ const Dashboard = () => {
   };
 
   const handleFiltersModalApply = () => {
-    getUserRecipes();
     setShowFiltersModal(false);
+    setType(filtersState.type);
+    setServes(filtersState.serves);
     dispatch(setIsFiltersApplied({ isFiltersApplied: true }));
   };
 
   const handleResetType = () => {
+    setType(null);
     dispatch(setRecipeType({ type: null }));
-    getUserRecipes();
   };
   const handleResetServes = () => {
+    setServes(null);
     dispatch(setRecipeServes({ serves: null }));
-    getUserRecipes();
   };
 
   return (
@@ -141,24 +162,26 @@ const Dashboard = () => {
               dispatch(setSearchText({ searchText: e.target.value }));
             }}
           />
-          {filtersState.searchText && <IconButton
-            type="button"
-            sx={{ p: "10px" }}
-            aria-label="search"
-            onClick={() => dispatch(setSearchText({ searchText: "" }))}
-          >
-            <CloseIcon />
-          </IconButton>}
+          {filtersState.searchText && (
+            <IconButton
+              type="button"
+              sx={{ p: "10px" }}
+              aria-label="search"
+              onClick={() => dispatch(setSearchText({ searchText: "" }))}
+            >
+              <CloseIcon />
+            </IconButton>
+          )}
         </Paper>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           {filtersState.isFiltersApplied && (
             <Stack direction="row" spacing={1}>
-              {Boolean(filtersState.type) && (
-                <Chip label={filtersState.type} onDelete={handleResetType} />
+              {Boolean(type) && (
+                <Chip label={type} onDelete={handleResetType} />
               )}
-              {Boolean(filtersState.serves) && (
+              {Boolean(serves) && (
                 <Chip
-                  label={`Serves - ${filtersState.serves}`}
+                  label={`Serves - ${serves}`}
                   onDelete={handleResetServes}
                 />
               )}
@@ -236,7 +259,7 @@ const Dashboard = () => {
         onClose={handleFiltersModalClose}
         aria-describedby="filters-dialog"
       >
-        <DialogTitle>{"Select required filter"}</DialogTitle>
+        <DialogTitle>Select required filter</DialogTitle>
         <DialogContent>
           <HeadingMD text={"RECIPE TYPE"} width={70} />
           <Stack direction="row" flexWrap="wrap" gap={1}>
@@ -268,6 +291,7 @@ const Dashboard = () => {
                   label={serve}
                   key={ind}
                   color="primary"
+                  disabled={!filtersState.type}
                   sx={{ fontFamily: "Poppins, sans-serif !important" }}
                   onClick={() => dispatch(setRecipeServes({ serves: serve }))}
                 />
@@ -276,6 +300,7 @@ const Dashboard = () => {
                   label={serve}
                   key={ind}
                   variant="outlined"
+                  disabled={!filtersState.type}
                   sx={{ fontFamily: "Poppins, sans-serif !important" }}
                   onClick={() => dispatch(setRecipeServes({ serves: serve }))}
                 />
