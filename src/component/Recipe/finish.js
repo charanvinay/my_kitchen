@@ -7,8 +7,10 @@ import LoopIcon from "@mui/icons-material/Loop";
 import SaveIcon from "@mui/icons-material/Save";
 import {
   AppBar,
+  Backdrop,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   Divider,
   Grid,
@@ -34,8 +36,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { bottomButtonsStyle } from "../../Common/Constants";
 import ErrorAlert from "../../Common/ErrorAlert";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
+import { primary } from "../../Common/Pallete";
 import CKeditor from "../../Common/Skeletons/CKeditor";
 import Step from "../../Common/Skeletons/Step";
+import SuccessAlert from "../../Common/SuccessAlert";
 import {
   editFinish,
   getRecipe,
@@ -60,9 +64,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const Finish = (props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errorText, setErrorText] = useState(false);
-  const [snackopen, setsnackOpen] = useState(false);
+  const [successText, setSuccessText] = useState(false);
+  const [errorSnackOpen, setErrorSnackOpen] = useState(false);
+  const [successSnackOpen, setSuccessSnackOpen] = useState(false);
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [displayEditors, setDisplayEditors] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -85,7 +93,8 @@ const Finish = (props) => {
     if (reason === "clickaway") {
       return;
     }
-    setsnackOpen(false);
+    setErrorSnackOpen(false);
+    setSuccessSnackOpen(false);
   };
 
   const handleChanges = (val, type) => {
@@ -141,7 +150,7 @@ const Finish = (props) => {
     e.preventDefault();
     if (Object.values(handleValidation()).length !== 0) {
       setErrorText(Object.values(handleValidation())[0]);
-      setsnackOpen(true);
+      setErrorSnackOpen(true);
     } else {
       goToNextPage();
     }
@@ -166,7 +175,23 @@ const Finish = (props) => {
     return errors;
   };
 
+  const customSetTimeout = (navTo) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    const newTimeoutId = setTimeout(() => {
+      navigate(navTo);
+      dispatch(handleReset());
+      dispatch(setSelectedRecipe(initialState));
+      handleClose();
+    }, 1500);
+
+    setTimeoutId(newTimeoutId);
+  };
+
   const handleSave = () => {
+    setLoading(true);
     try {
       let recipe_obj = {
         uid: loggedUser.uid,
@@ -179,10 +204,10 @@ const Finish = (props) => {
       console.log(recipe_obj);
       addDoc(collection(db, "recipes"), recipe_obj)
         .then((res) => {
-          navigate("/home");
-          dispatch(handleReset());
-          dispatch(setSelectedRecipe(initialState));
-          handleClose();
+          setSuccessSnackOpen(true);
+          setSuccessText("Created Successfully!!!");
+          setLoading(false);
+          customSetTimeout("/home");
         })
         .catch((err) => console.log(err));
     } catch (error) {
@@ -190,6 +215,7 @@ const Finish = (props) => {
     }
   };
   const handleUpdate = () => {
+    setLoading(true);
     const taskDocRef = doc(db, "recipes", recipe._id);
     console.log(taskDocRef);
     try {
@@ -204,10 +230,10 @@ const Finish = (props) => {
       };
       updateDoc(taskDocRef, recipe_obj)
         .then((res) => {
-          navigate("/profile");
-          dispatch(handleReset());
-          dispatch(setSelectedRecipe(initialState));
-          handleClose();
+          setSuccessSnackOpen(true);
+          setSuccessText("Updated Successfully!!!");
+          setLoading(false);
+          customSetTimeout("/profile");
         })
         .catch((err) => {
           console.log(err);
@@ -350,9 +376,14 @@ const Finish = (props) => {
             </Stack>
           </Box>
           <ErrorAlert
-            snackopen={snackopen}
+            snackopen={errorSnackOpen}
             handleClose={handleCloseSnackbar}
             text={errorText}
+          />
+          <SuccessAlert
+            snackopen={successSnackOpen}
+            handleClose={handleCloseSnackbar}
+            text={successText}
           />
         </>
       ) : (
@@ -405,6 +436,9 @@ const Finish = (props) => {
         <Toolbar />
         <CompleteRecipe />
       </Dialog>
+      <Backdrop sx={{ color: primary, zIndex: 10000 }} open={loading}>
+        <CircularProgress sx={{ color: "white" }} />
+      </Backdrop>
     </Box>
   );
 };
