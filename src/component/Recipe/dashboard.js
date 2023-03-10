@@ -149,6 +149,7 @@ const Dashboard = () => {
             inputProps={{ "aria-label": "search recipe" }}
             value={filtersState.searchText}
             onChange={(e) => {
+              e.preventDefault();
               console.log(e.target.value);
               dispatch(setSearchText({ searchText: e.target.value }));
             }}
