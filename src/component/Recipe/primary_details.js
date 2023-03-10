@@ -116,6 +116,9 @@ const PrimaryDetails = (props) => {
         <Grid item xs={12} md={4}>
           <HeadingMD text={"Title"} width={20} />
           <TextField
+            inputProps={{
+              maxLength: 20,
+            }}
             InputProps={{
               style: {
                 letterSpacing: 0.6,
@@ -205,6 +208,9 @@ const PrimaryDetails = (props) => {
                       Name
                     </Typography>
                     <TextField
+                      inputProps={{
+                        maxLength: 20,
+                      }}
                       InputProps={{
                         style: {
                           letterSpacing: 0.6,
@@ -233,6 +239,9 @@ const PrimaryDetails = (props) => {
                       Units
                     </Typography>
                     <TextField
+                      inputProps={{
+                        maxLength: 20,
+                      }}
                       InputProps={{
                         style: {
                           letterSpacing: 0.6,

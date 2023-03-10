@@ -66,18 +66,9 @@ const Dashboard = () => {
     try {
       let user_ref = query(
         collection(db, "recipes"),
-        orderBy("title"),
-        where("title", ">=", filtersState.searchText?.toLowerCase()),
-        where("title", "<=", filtersState.searchText?.toLowerCase() + "\uf8ff"),
+        where("title_keywords", "array-contains", filtersState.searchText?.toLowerCase()),
         // orderBy("type"),
-        // where("type", ">=", filtersState.type || ""),
-        // where("type", "<=", filtersState.type || "" + "\uf8ff"),
-        // orderBy("serves"),
-        // where("serves", ">=", filtersState.serves || ""),
-        // where("serves", "<=", filtersState.serves || "" + "\uf8ff"),
-        // where("serves", filtersState.serves ? "==" : ">=", filtersState.serves || ""),
-        // where("type", filtersState.type ? "==" : ">=", filtersState.type || ""),
-        // where("serves", "==", filtersState.serves || ""),
+        
       );
       let user_docs = await getDocs(user_ref);
       console.log(user_docs.docs);

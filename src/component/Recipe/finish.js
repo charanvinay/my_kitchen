@@ -33,7 +33,7 @@ import {
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { bottomButtonsStyle } from "../../Common/Constants";
+import { bottomButtonsStyle, getAllSubstrings } from "../../Common/Constants";
 import ErrorAlert from "../../Common/ErrorAlert";
 import ImgWithLabelCard from "../../Common/ImgWithLabelCard";
 import { primary } from "../../Common/Pallete";
@@ -199,7 +199,7 @@ const Finish = (props) => {
         email: loggedUser.email,
         photoURL: loggedUser.photoURL,
         ...recipe,
-        title: recipe?.title?.toLowerCase(),
+        title_keywords: getAllSubstrings(recipe?.title),
       };
       console.log(recipe_obj);
       addDoc(collection(db, "recipes"), recipe_obj)
@@ -226,7 +226,7 @@ const Finish = (props) => {
         email: loggedUser.email,
         photoURL: loggedUser.photoURL,
         ...recipe,
-        title: recipe?.title?.toLowerCase(),
+        title_keywords: getAllSubstrings(recipe?.title),
       };
       updateDoc(taskDocRef, recipe_obj)
         .then((res) => {

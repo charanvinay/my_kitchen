@@ -110,16 +110,20 @@ export const theme = createTheme({
           props: { variant: "contained" },
           style: {
             textTransform: "none",
-            fontSize: "15px",
-            letterSpacing: 0.5,
+            // fontWeight: "600",
+            fontFamily: "Poppins, sans-serif !important",
+            fontSize: "16px",
+            // letterSpacing: 1,
           },
         },
         {
           props: { variant: "outlined" },
           style: {
             textTransform: "none",
-            fontSize: "15px",
-            letterSpacing: 0.5,
+            // fontWeight: "600",
+            fontFamily: "Poppins, sans-serif !important",
+            fontSize: "16px",
+            letterSpacing: 0,
           },
         },
       ],
@@ -129,6 +133,11 @@ export const theme = createTheme({
         fontSize: "20px",
       },
     },
+    MuiStepper: {
+      styles: {
+        fontSize: "20px",
+      },
+    }
   },
 });
 
@@ -153,3 +162,14 @@ export const returnType = (type) => {
 export const recipeTypes = ["Veg", "NonVeg", "Egg", "Breakfast", "Snacks", "Beverage"]
 
 export const recipeServes = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
+export const getAllSubstrings= (str) => {
+	str = str.toLowerCase();
+  var res = [""];
+  for (let i = 0; i < str.length; i++) {
+    for (let j = i + 1; j <= str.length; j++) {
+      res.push(str.substring(i, j));
+    }
+  }
+  return res;
+}
