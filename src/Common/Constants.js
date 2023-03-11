@@ -113,7 +113,7 @@ export const theme = createTheme({
             // fontWeight: "600",
             fontFamily: "Poppins, sans-serif !important",
             fontSize: "16px",
-            // letterSpacing: 1,
+            letterSpacing: 0,
           },
         },
         {
