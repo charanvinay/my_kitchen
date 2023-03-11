@@ -306,10 +306,11 @@ const Finish = (props) => {
                     <CameraAltIcon color="black" />
                     <input
                       hidden
-                      accept="image/*;capture=camera"
+                      accept="image/*"
                       type="file"
                       id="uploadPhotoInput"
                       name="uploadPhotoInput"
+                      capture="environment"
                       value=""
                       onChange={(e) => {
                         e.preventDefault();
